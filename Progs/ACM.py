@@ -14,6 +14,12 @@ def main():
       "Digital manufacturing"
   ]
 
+  # Asking for API key
+  def get_api_key():
+      """Prompts the user to enter their API key."""
+      api_key = input("Enter your API key: ")
+      return api_key
+
   def categorize_abstract(abstract):
 
       prompt = f"""
@@ -29,7 +35,7 @@ def main():
       - Assigned category: [Category name or ""Other - [short description]""]
       - Optional keywords: [keyword1, keyword2, keyword3] 
       """
-      genai.configure(api_key='AIzaSyAoW91r6jsG5rsnrg4_0X8DeOAYPD94Nog')
+      genai.configure(api_key=pak)
       model = genai.GenerativeModel("gemini-1.5-flash")
       response = model.generate_content(prompt)
 
@@ -94,7 +100,8 @@ def main():
 
   # Ensure `df` is defined before using it
   if file_path:
-      df = pd.read_excel(file_path)  # Read the Excel file again to create `df`
+        pak = get_api_key()
+        df = pd.read_excel(file_path)  # Read the Excel file again to create `df`
 
   # Categorize abstracts
   df_results = categorize_abstracts_from_excel(file_path)

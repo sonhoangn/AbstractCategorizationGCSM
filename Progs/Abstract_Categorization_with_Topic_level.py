@@ -3,11 +3,16 @@ import os
 import google.generativeai as genai
 #import panda as pd
 
+# Asking for API key
+def get_api_key():
+    """Prompts the user to enter their API key."""
+    api_key = input("Enter your API key: ")
+    return api_key
 #Define method to categorize abstract
 def categorize_abstract(abstract):
     #Setting up prompt
     prompt = f"""
-    Please analyze the following abstract, decide which overall categories (the overall categories must be relevant to the predefined topics of the conference) would best describe the abstract, decide the field of research (must fit in with any of the sub-topics of the chosen topic) that the abstract is targeting, identify the main research method that the abstract is addressing, analyze whether the research of the provide abstract will address a general topic (overview, theoretical framework, etc.) or a specific technical topic (applications, technical solutions, etc.), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for each part must be concise and should be up to 3 words. The response should also include the number of token for the prompt and the response for troubleshooting purpose. The response should not contain any blank line between each item.
+    Analyze the following abstract, decide which overall categories (the overall categories must be relevant to the predefined topics of the conference) would best describe the abstract, decide the field of research (must fit in with any of the sub-topics of the chosen topic) that the abstract is targeting, identify the main research method that the abstract is addressing, analyze whether the research of the provide abstract will address a general topic (overview, theoretical framework, etc.) or a specific technical topic (applications, technical solutions, etc.), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for each part must be concise and should be up to 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
     Abstract:
     {abstract}
     Predefined topics and their sub-topics:
@@ -50,7 +55,7 @@ def categorize_abstract(abstract):
     - Response token count
     """
     #Configure generative ai model using personal API key and define response
-    genai.configure(api_key="AIzaSyAoW91r6jsG5rsnrg4_0X8DeOAYPD94Nog")
+    genai.configure(api_key=pak)
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(prompt)
     #Find the best fit category name from the response
@@ -89,14 +94,17 @@ def categorize_abstract(abstract):
         forecasted_time = category_line6[0].split(": ")[1].strip()
     else:
         forecasted_time = "N/A"
+
     #Get token count
-    prompt_tokens = model.count_tokens(prompt)
-    response_tokens = model.count_tokens(response.text)
+    prompt_tokens = str(model.count_tokens(prompt)).split(": ")[1].strip()
+    response_tokens = str(model.count_tokens(response.text)).split(": ")[1].strip()
     #Return values from method
     return overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens
 
 if __name__ == "__main__":
+    pak = get_api_key()
     while True:
+        #pak = get_api_key()
         user_input = input ("Please provide abstract: ")
         if not user_input:
             print("No abstract provided. Cancelling request...")
@@ -109,8 +117,8 @@ if __name__ == "__main__":
         print("- Scope: ", scope)
         print("- Research Purpose: ", purpose)
         print("- Forecasted Presentation Time: ", forecasted_time)
-        print("- Prompt", prompt_tokens)
-        print("- Response", response_tokens)
+        print("- Prompt token count: ", prompt_tokens)
+        print("- Response token count: ", response_tokens)
 
         continue_input = input("Would you like to continue with another abstract? (y/n): ")
         if continue_input.lower() != "y":

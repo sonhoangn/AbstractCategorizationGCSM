@@ -1,0 +1,2 @@
+# AbstractCategorizationGCSM
+Abstract Categorization Tool

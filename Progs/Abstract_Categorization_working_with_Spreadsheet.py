@@ -16,7 +16,7 @@ def main():
     def categorize_abstract(abstract):
         #Setting up prompt
         prompt = f"""
-        Analyze the following abstract, decide which overall categories (the overall categories must be chosen from one of the predefined topics) would best describe the abstract, decide the field of research (must be chosen from one of the sub-topics of the chosen predefined topic) that the abstract is targeting, identify the main research method that the abstract is addressing, analyze whether the research of the provide abstract will address a general topic (overview, theoretical framework, etc.) or a specific technical topic (applications, technical solutions, etc.), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for each part must be concise and should be up to 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
+        Analyze the following abstract, decide which overall categories (the overall categories must be chosen from one of the 4 predefined topics) would best describe the abstract, decide the field of research (must be chosen from one of the sub-topics of the chosen predefined topic) that the abstract is targeting, identify the main research method that the abstract is addressing, decide the scope of the abstract based on the provided info by choosing a score between 1 to 6 (with 1 being extremely narrow scope and 6 being extremely broad scope), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for Overall Category must be chosen only from the list of 4 predefined topics. The answer for Field of research must be chosen from the list of subtopics.The answer for other part must be concise and no longer than 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
         Abstract:
         {abstract}
         Predefined topics and their sub-topics:
@@ -52,7 +52,7 @@ def main():
         - Overall Category: Category name
         - Field of research: Field name
         - Research methods: Methodology
-        - Scope: decide the score (band 1 - Very General, 2 - General, 3 - Slightly General, 4 - Slightly Specific, 5 - Specific, 6 - Very Specific) 
+        - Scope: Score Number between 1 to 6
         - Research Purpose: Theoretical or Applied
         - Forecasted Presentation Time: Brief or Standard
         - Prompt token count
@@ -118,8 +118,8 @@ def main():
         #Start prompting for each abstract
         for index, abstract in enumerate(df["abstract"]):
             #Check if abstract exists, if not then return n/a
-            if pd.isna(abstract):
-                results.append((index, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", 0, 0))
+            # if pd.isna(abstract):
+            #     results.append((index, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", 0, 0))
             #If abstract exists, continue prompting with genai
             try:
                 overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(abstract)
@@ -131,7 +131,7 @@ def main():
                 print(f"Error processing abstract {index+1}: {e}")
                 results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
         #Create a Data frame with results
-        df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Field of research", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
+        df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
 
         return df_results
 

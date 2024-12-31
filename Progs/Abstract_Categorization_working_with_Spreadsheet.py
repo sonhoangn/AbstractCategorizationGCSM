@@ -52,7 +52,7 @@ def main():
         - Overall Category: Category name
         - Field of research: Field name
         - Research methods: Methodology
-        - Scope: General or Specific 
+        - Scope: decide the score (band 1 - Very General, 2 - General, 3 - Slightly General, 4 - Slightly Specific, 5 - Specific, 6 - Very Specific) 
         - Research Purpose: Theoretical or Applied
         - Forecasted Presentation Time: Brief or Standard
         - Prompt token count

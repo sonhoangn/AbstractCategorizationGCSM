@@ -7,16 +7,38 @@ from tkinter import Tk, filedialog
 from pandas.io.formats.format import return_docstring
 
 def main():
+    #Select Gen AI Model
+    def model_select():
+        print("Please choose a model:")
+        print("1. Gemini-1.5-flash")
+        print("2. Gemini-2.0-flash-experimental (Check if your API key and region can access this model before choosing)")
+        print("3. Gemini Pro")
+        print("4. Gemini Ultra (Check if your API key and region can access this model before choosing)")
+        print("5. PaLM 2 (Check if your API key and region can access this model before choosing)")
+        model_choice = input("You have selected model (1/2): ")
+        if model_choice == "1":
+            return "gemini-1.5-flash"
+        elif model_choice == "2":
+            return "gemini-2.0-flash"
+        elif model_choice == "3":
+            return "gemini-pro"
+        elif model_choice == "4":
+            return "gemini-ultra"
+        elif model_choice == "5":
+            return "palm-2"
+        else:
+            print("Invalid model selection. Default model shall be used: gemini-1.5-flash")
+            return "gemini-1.5-flash"
+
     #Asking for API key
     def get_api_key():
-        """Prompts the user to enter their API key."""
         api_key = input("Enter your API key: ")
         return api_key
     #Define method to categorize abstract
     def categorize_abstract(abstract):
         #Setting up prompt
         prompt = f"""
-        Analyze the following abstract, decide which overall categories (the overall categories must be chosen from one of the 4 predefined topics) would best describe the abstract, decide the field of research (must be chosen from one of the sub-topics of the chosen predefined topic) that the abstract is targeting, identify the main research method that the abstract is addressing, decide the scope of the abstract based on the provided info by choosing a score between 1 to 6 (with 1 being extremely narrow scope and 6 being extremely broad scope), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for Overall Category must be chosen only from the list of 4 predefined topics. The answer for Field of research must be chosen from the list of subtopics.The answer for other part must be concise and no longer than 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
+        Analyze the following abstract, decide which overall categories (the overall categories must be chosen from one of the 4 predefined topics) would best describe the abstract, decide the field of research (must be chosen from one of the sub-topics of the chosen predefined topic) that the abstract is targeting, identify the main research method that the abstract is addressing, decide the scope of the abstract based on the provided info by choosing a score between 1 to 6 (with 1 being extremely narrow scope and 6 being extremely broad scope), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for Overall Category must be strictly chosen only from the list of 4 predefined topics (do not generate new topics that is not the same as the 4 predefined topics), and must be cleaned, free of any extra special characters. The answer for Field of research must be strictly chosen from the list of subtopics (do not generate new topics that is not the same as the provided subtopics), and must be cleaned, free of any extra special characters. The answer for other part must be concise and no longer than 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
         Abstract:
         {abstract}
         Predefined topics and their sub-topics:
@@ -59,23 +81,22 @@ def main():
         - Response token count
         """
         #Configure generative ai model using personal API key and define response
-        #pak = get_api_key()
         genai.configure(api_key=pak)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel(gam)
         response = model.generate_content(prompt)
-        #Find the best fit category name from the response
+        #Find the best fit overall category name from the response
         category_line1 = [line for line in response.text.split("\n") if line.startswith("- Overall Category: ")]
         if category_line1:
             overall_category = category_line1[0].split(": ")[1].strip()
         else:
             overall_category = "N/A"
-        #Find the second best fit category name from the response
+        #Find the best fit topic name from the response
         category_line2 = [line for line in response.text.split("\n") if line.startswith("- Field of research: ")]
         if category_line2:
             research_field = category_line2[0].split(": ")[1].strip()
         else:
             research_field = "N/A"
-        #Find the third best fit category name from the response
+        #Find the best fit research method name from the response
         category_line3 = [line for line in response.text.split("\n") if line.startswith("- Research methods: ")]
         if category_line3:
             research_method = category_line3[0].split(": ")[1].strip()
@@ -93,7 +114,7 @@ def main():
             purpose = category_line5[0].split(": ")[1].strip()
         else:
             purpose = "N/A"
-        #Forecast presentation time needed for the abstract
+        #Forecast presentation duration needed for the abstract
         category_line6 = [line for line in response.text.split("\n") if line.startswith("- Forecasted Presentation Time: ")]
         if category_line6:
             forecasted_time = category_line6[0].split(": ")[1].strip()
@@ -109,6 +130,8 @@ def main():
     def input_from_spreadsheet(file_path):
         #Create data frame from the provided spreadsheet
         df = pd.read_excel(file_path)
+        #Record start time
+        start_time = time.time()
         #Define response from genai as an array
         results = []
         #Check if abstract column present in the spreadsheet
@@ -117,19 +140,22 @@ def main():
             return None
         #Start prompting for each abstract
         for index, abstract in enumerate(df["abstract"]):
-            #Check if abstract exists, if not then return n/a
-            # if pd.isna(abstract):
-            #     results.append((index, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", 0, 0))
             #If abstract exists, continue prompting with genai
             try:
                 overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(abstract)
                 results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens))
+
+                # Print progress message every 10 abstracts
+                if (index + 1) % 10 == 0:
+                    print(f"No. of abstracts processed: {index + 1}")
                 # Include a delay between prompt request
                 time.sleep(3)
             #Define exception
             except Exception as e:
                 print(f"Error processing abstract {index+1}: {e}")
                 results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
+        # Calculate and print total processing time
+        print(f"All {index + 1} abstracts processed in {(time.time()-start_time):.2f} seconds.")
         #Create a Data frame with results
         df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
 
@@ -151,6 +177,7 @@ def main():
 
         if file_path:
             pak = get_api_key()
+            gam = model_select()
             df = pd.read_excel(file_path)
 
         df_results = input_from_spreadsheet(file_path)

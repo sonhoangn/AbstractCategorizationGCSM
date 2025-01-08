@@ -164,23 +164,13 @@ def main():
     def session_assignment(df_results):
         columns_to_analyze = ['No.', 'Overall Category', 'Topic', 'Organization', 'Country']
         df_selected_column = df_results[columns_to_analyze]
-        prompt_3=f"""Analyze the provided data table containing a list of abstracts with associated information including organizations, countries, topic, and overall category:
-        1. Strict rule: Group Size Limit
-        1a. Each group MUST contain no more than 6 abstracts
-        1b. Analyze the abstracts within that group based on their topic (highest priority) and overall category (second highest priority)
-        1c. If a group exceeds 6 abstracts, redistribute the abstracts into smaller groups, ensuring no group exceeds 6 abstracts
-        2. Strict rule: Minimum Number of Groups
-        2a. The number of groups MUST be sufficient to accommodate all abstracts while adhering to the 6-abstract limit
-        2b. Example: If there are 60 abstracts, there must be at least 10 groups (60 abstracts / 6 abstracts per group = 10 groups).
-        3. Strict rule: Group Similarity: Abstracts within the same group MUST exhibit high similarity in topic (highest priority) and overall category (second highest priority).
-        4. Optional rule: Country Diversity: Whenever possible, ensure each group contains abstracts from diverse countries.
-        5. Present your answer for each abstract in the following format: 
-        5a. Abstract number [index number] belongs to group: [group number]. 
-        5b. Start with group number 1 and increment sequentially.
-        5c. Example: 
-        Abstract number 1 belongs to group: 1
-        Abstract number 23 belongs to group: 2
-        
+        prompt_3=f"""Review the data table consisting of list of abstracts and their associated information such as authors, countries, topic and overall category. Based on their provided info, assign each abstract into group with rules as follows:
+        1. Strict rule: one group contain a maximum number of 6 abstracts only. Do not assign additional abstract to a group that already has 6 abstracts assigned. If a group have more than 6 abstracts assigned to it, analyze the abstracts within that group to assign them into smaller groups. Ensure the new smaller groups have no more than 6 abstracts per group. If a group have less than 6 abstracts assigned to it, then the assigned group would be unchanged for those abstracts.
+        2. Strict rule: The number of groups have to satisfy the number of abstracts and the first rule. For example, if there are 60 abstracts, then there should be at least 10 groups.
+        3. Strict rule: Abstracts in the same group must have similar assigned topic (highest priority), or overall category (2nd highest priority).
+        4. Optional rule: Ensure each group have abstracts from diverse countries.
+        5. Answer must be clean and must be a group number for the abstract being analyzed. The group number should start from 1.
+        6. Review every abstract and provide answer for each abstract based on their index number in the data table (Examples of a correct response: - Abstract number 1 belongs to group: 1; - Abstract number 23 belongs to group: 2; etc.)
         Data table to be analyzed:
         {df_selected_column.to_markdown(index=False)}
         Response format:
@@ -207,31 +197,12 @@ def main():
     def session_assignment_reevaluation(df_results):
         column_to_check = ['Paper Title', 'Topic', 'Overall Category', 'Session No.']
         df_reeval = df_results[column_to_check]
-        prompt_3 = f"""Based on the data in the "Session No.", "Topic", and "Overall Category" columns, re-evaluate and adjust the "Session No." assignments for each abstract according to the following rules:
-        1. Strict Rule: Response Format
-        1a. The response format MUST strictly adhere to the following:
-            - "Abstract number [index number] belongs to session number: [session number]"
-        2. Rule: Minimum Number of Sessions
-        2a. Calculate the minimum required number of sessions based on the total number of abstracts (minimum number of sessions = total abstracts / 6).
-        2b. If the actual number of sessions in the data is less than the minimum required number:
-            - Identify sessions with more than 6 abstracts.
-            - Create new sessions by moving abstracts from these overcrowded sessions.
-            - Ensure no session exceeds 6 abstracts after the adjustments.
-        3. Rule: Session Size Limit        
-        3a. If a session has more than 6 abstracts:
-            - Analyze the abstracts within that session based on their "Topic" and "Overall Category" (prioritize "Topic").
-            - Redistribute the abstracts into smaller sessions, ensuring no session exceeds 6 abstracts.
-        4. Rule: Maintain Small Sessions
-        4a. If a session has less than 6 abstracts, its assignments remain unchanged.
-        5. Rule: No Maximum Session Limit        
-        5a. The number of sessions is flexible and can increase as needed to accommodate all abstracts while adhering to the 6-abstract limit per session.
-        6. Rule: Preserve Accurate Assignments        
-        6a. If the existing "Session No." assignments are already accurate and compliant with all rules, maintain the original assignments.
-        7. Output:        
-        7a. Provide a list of adjusted "Session No." assignments for each abstract in the specified response format.
-        7b. Example:
-            - Abstract number 1 belongs to session number: 1
-            - Abstract number 23 belongs to session number: 2
+        prompt_3 = f"""Based on the data of the Session No., Topic and Overall Category columns, check if the Session No. would need to be adjusted based on the following rules:
+        1. The format of the response has to strictly follow the Response format defined in this prompt.
+        2. If a group have more than 6 abstracts assigned to it, analyze the abstracts within that group to assign them into smaller groups. Ensure the new smaller groups have no more than 6 abstracts per group.
+        3. If a group have less than 6 abstracts assigned to it, then the assigned group would be unchanged for those abstracts.
+        4. There is no maximum limit to the number of groups, which can be as much as possible to accommodate the amount of provided abstracts.
+        5. If the provided Session No. is accurate for each paper, keep the previous Session No.
         Data table to be analyzed:
         {df_reeval.to_markdown(index=False)}
         Response format:

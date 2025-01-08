@@ -7,6 +7,9 @@ import time
 from tkinter import Tk, filedialog
 #This library is used to help display information onto browsers in HTML format
 from IPython.display import HTML, display
+import webbrowser
+import os
+import tempfile
 
 def main():
     #Generative AI models selection. Only 2 of them are actually usable for a free public API key from google
@@ -247,7 +250,7 @@ def main():
             #If abstract exists, continue prompting with genai
             try:
                 overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(index, abstract)
-                time.sleep(5)
+                time.sleep(6)
                 affiliation_org, affiliation_country = affiliation_search(index, abstract, paper_title, authors_list, nation)
                 results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, affiliation_org, affiliation_country, prompt_tokens, response_tokens))
 
@@ -255,7 +258,7 @@ def main():
                 if (index + 1) % 10 == 0:
                     print(f"No. of abstracts processed: {index + 1}")
                 # Include a delay between prompt request
-                time.sleep(5)
+                time.sleep(6)
             #Define exception
             except Exception as e:
                 print(f"Error processing abstract {index+1}: {e}")
@@ -291,9 +294,18 @@ def main():
             return False
 
     #Display results via browser
-    def browser_display(df_results):
-        html_table = df_results.to_html(index=False)
-        display(HTML(html_table))
+    def browser_display(df_final):
+        output_path = "G:/GPE/GPE Projects/data/Browserdisplay/my_dataframe.html"
+        html_table = df_final.to_html(index=False)
+
+        with open(output_path, "w") as f:
+            f.write(html_table)
+
+        try:
+            webbrowser.open(output_path)
+            print(f"DataFrame displayed in browser: {output_path}")
+        except Exception as e:
+            print(f"Error opening HTML file in browser: {e}")
 
     if __name__ == "__main__":
         #Select a spreadsheet

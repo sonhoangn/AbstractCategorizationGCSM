@@ -296,11 +296,13 @@ def main():
 
     #Display results via browser
     def browser_display(df_final):
-        output_path = "G:/GPE/GPE Projects/data/Browserdisplay/my_dataframe.html"
         html_table = df_final.to_html(index=False)
-        html_table = unexpected_characters(html_table)
 
-        with open(output_path, "w", encoding="utf-8") as f:
+        # Get the current working directory
+        current_dir = os.getcwd()
+        output_path = os.path.join(current_dir, "dataframe.html")
+
+        with open(output_path, "w") as f:
             f.write(html_table)
 
         try:

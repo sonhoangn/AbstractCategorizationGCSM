@@ -271,6 +271,7 @@ def main():
     #Write results to spreadsheet
     def write_to_excel(df_results):
         columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
+        # columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Country']
         df_final = df_results[columns_to_save]
         # Save data frame results to a new spreadsheet
         output_file = file_path.replace(".xlsx", "_processed.xlsx")
@@ -288,78 +289,135 @@ def main():
             write_to_excel(df_results)
             return True
         else:
-            print("Session scheduling is now completed, exiting...")
+            print("Session scheduling is now completed.")
             return False
 
+    # Detect and convert unexpected characters into readable one
     def unexpected_characters(text):
         return text.replace('\u01b0', 'L')
 
     #Display results via browser
     def browser_display(df_final):
-        html_table = df_final.to_html(index=False)
-
+        # Append dataframe into html table that would be displayed in a browser
+        html_table = unexpected_characters(df_final).to_html(index=False)
         # Get the current working directory
         current_dir = os.getcwd()
-        output_path = os.path.join(current_dir, "dataframe.html")
+        output_path = os.path.join(current_dir, "Sessions-Schedule.html")
 
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding='utf-8') as f:
             f.write(html_table)
 
         try:
             webbrowser.open(output_path)
-            print(f"DataFrame displayed in browser: {output_path}")
+            print(f"Sessions schedule is now displayed in your default browser: {output_path}")
         except Exception as e:
             print(f"Error opening HTML file in browser: {e}")
 
+    # if __name__ == "__main__":
+    #     #Select a spreadsheet
+    #     root = Tk()
+    #     root.withdraw()
+    #     file_path = filedialog.askopenfilename(
+    #         title="Select Abstracts List",
+    #         filetypes=[("Excel files", "*.xlsx *.xls")]
+    #     )
+    #     root.destroy()
+    #
+    #     #Check if a spreadsheet containing data has been selected
+    #     if not file_path:
+    #         print("No file selected.")
+    #         return
+    #
+    #     if file_path:
+    #         #Setting up Generative AI model
+    #         pak = get_api_key()
+    #         gam = model_select()
+    #         genai.configure(api_key=pak)
+    #         model = genai.GenerativeModel(gam)
+    #
+    #     #Transforming original spreadsheet into machine-readable data frame
+    #     df = pd.read_excel(file_path)
+    #     df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
+    #
+    #     #Preliminary data processing using original spreadsheet data
+    #     df_results = input_from_spreadsheet(file_path)
+    #
+    #     if df_results is None:
+    #         return
+    #     time.sleep(5)
+    #
+    #     #Preliminary session assignment based on preliminary data processing
+    #     session_no = session_assignment(df_results)
+    #
+    #     #Preparing final data in order to have them exported into the target human-readable spreadsheet
+    #     df_results["Session No."] = session_no
+    #     df_results["Paper Title"] = df1[['Paper Title']]
+    #     df_results["Paper ID"] = df1[['Paper ID']]
+    #     df_results["Authors"] = df1[['Authors']]
+    #
+    #     #Write results to spreadsheet
+    #     write_to_excel(df_results)
+    #
+    #     #Check if users still want to have a different sessions schedule
+    #     e_d = True
+    #     while e_d:
+    #         e_d = decision_to_evaluate(session_no,df_results)
+
     if __name__ == "__main__":
-        #Select a spreadsheet
-        root = Tk()
-        root.withdraw()
-        file_path = filedialog.askopenfilename(
-            title="Select Abstracts List",
-            filetypes=[("Excel files", "*.xlsx *.xls")]
-        )
-        root.destroy()
+        decision = input("Would you like to start the Sessions scheduling routine now? (Y/N) ")
+        pak = get_api_key()
+        while decision == "Y":
+            # Select a spreadsheet
+            root = Tk()
+            root.withdraw()
+            file_path = filedialog.askopenfilename(
+                title="Select Abstracts List",
+                filetypes=[("Excel files", "*.xlsx *.xls")]
+            )
+            root.destroy()
 
-        #Check if a spreadsheet containing data has been selected
-        if not file_path:
-            print("No file selected.")
-            return
+            # Check if a spreadsheet containing data has been selected
+            if not file_path:
+                print("No file selected.")
+                return
 
-        if file_path:
-            #Setting up Generative AI model
-            pak = get_api_key()
-            gam = model_select()
-            genai.configure(api_key=pak)
-            model = genai.GenerativeModel(gam)
+            if file_path:
+                # Setting up Generative AI model
+                # pak = get_api_key()
+                gam = model_select()
+                genai.configure(api_key=pak)
+                model = genai.GenerativeModel(gam)
 
-        #Transforming original spreadsheet into machine-readable data frame
-        df = pd.read_excel(file_path)
-        df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
+            # Transforming original spreadsheet into machine-readable data frame
+            df = pd.read_excel(file_path)
+            df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
 
-        #Preliminary data processing using original spreadsheet data
-        df_results = input_from_spreadsheet(file_path)
+            # Preliminary data processing using original spreadsheet data
+            df_results = input_from_spreadsheet(file_path)
 
-        if df_results is None:
-            return
-        time.sleep(5)
+            if df_results is None:
+                return
+            time.sleep(5)
 
-        #Preliminary session assignment based on preliminary data processing
-        session_no = session_assignment(df_results)
+            # Preliminary session assignment based on preliminary data processing
+            session_no = session_assignment(df_results)
 
-        #Preparing final data in order to have them exported into the target human-readable spreadsheet
-        df_results["Session No."] = session_no
-        df_results["Paper Title"] = df1[['Paper Title']]
-        df_results["Paper ID"] = df1[['Paper ID']]
-        df_results["Authors"] = df1[['Authors']]
+            # Preparing final data in order to have them exported into the target human-readable spreadsheet
+            df_results["Session No."] = session_no
+            df_results["Paper Title"] = df1[['Paper Title']]
+            df_results["Paper ID"] = df1[['Paper ID']]
+            df_results["Authors"] = df1[['Authors']]
 
-        #Write results to spreadsheet
-        write_to_excel(df_results)
+            # Write results to spreadsheet
+            write_to_excel(df_results)
 
-        #Check if users still want to have a different sessions schedule
-        e_d = True
-        while e_d:
-            e_d = decision_to_evaluate(session_no,df_results)
+            # Check if users still want to have a different sessions schedule
+            e_d = True
+            while e_d:
+                e_d = decision_to_evaluate(session_no, df_results)
+            decision = input("Would you like to analyze another list of research papers? (Y/N)")
+
+        print("No further request received, exiting...")
 
 if __name__ == "__main__":
     main()

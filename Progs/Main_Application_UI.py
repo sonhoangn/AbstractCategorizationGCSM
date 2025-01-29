@@ -1,7 +1,7 @@
 import sys
 import datetime
 from io import StringIO
-
+import Main_Functions
 from pathlib import Path
 import tkinter
 import Abstract_Categorization_working_with_Spreadsheet
@@ -44,7 +44,6 @@ window.title("Automated Conference Decision-Making Systems: Distributing accepte
 
 window.geometry("800x533")
 window.configure(bg = "#9fd0f5")
-
 
 canvas = Canvas(
     window,
@@ -110,7 +109,9 @@ entry_2.place(
 entry_2.bind("<Enter>", instruction_message_input)
 
 # Browse spreadsheet file
+file_path = None
 def browse_ss():
+    global file_path
     file_path = filedialog.askopenfilename(
             title="Select Abstracts List",
             filetypes=[("Excel files", "*.xlsx;*.xls;*.csv")]
@@ -164,6 +165,7 @@ entry_3.place(
 entry_3.bind("<Enter>", instruction_message_llm_selection)
 
 # Save LLM Selection
+llm_selection = None
 def save_llm_selection():
     global llm_selection
     llm_selection = entry_3.get()
@@ -214,6 +216,7 @@ entry_4.place(
 entry_4.bind("<Enter>", instruction_message_api_input)
 
 # Save API Key
+API_KEY = None
 def save_api_key():
     global API_KEY
     API_KEY = entry_4.get()
@@ -242,6 +245,23 @@ button_3.place(
     height=40.0
 )
 
+# Running main Function
+def start_analysis():
+    global file_path, llm_selection, API_KEY
+    print(f"{timestamp} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
+    if not file_path:
+        messagebox.showwarning("Warning", "No file selected!")
+        return
+    if not llm_selection:
+        messagebox.showwarning("Warning", "No LLM selected!")
+        return
+    if not API_KEY:
+        messagebox.showwarning("Warning", "No API Key provided!")
+        return
+
+    print(f"{timestamp} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
+    Main_Functions.main(file_path, llm_selection, API_KEY)
+
 # Start button
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_2.png"))
@@ -249,7 +269,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print(f"{timestamp} - Start analyzing!"),
+    command=start_analysis,
     relief="flat"
 )
 button_1.place(

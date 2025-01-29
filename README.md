@@ -40,7 +40,7 @@ AbstractCategorizationGCSM/
    - `Country`
 2. Run the script: Execute the Python script from your terminal:
    ```bash
-   python your_script_name.py  # Replace with the actual script name
+   python Abstract_Categorization_working_with_Spreadsheet.py 
    ```
 3. Model Selection: You'll be prompted to choose a Generative AI model (Gemini 1.5 Flash, Gemini Pro, etc.).  Note that access to some models might depend on your API key and region.
 4. API Key Input: Enter your Google Cloud API key when prompted.

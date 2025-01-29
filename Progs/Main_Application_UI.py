@@ -1,10 +1,9 @@
 import sys
 import datetime
-from io import StringIO
 import Main_Functions
 from pathlib import Path
 import tkinter
-import Abstract_Categorization_working_with_Spreadsheet
+import threading
 
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
 
@@ -260,7 +259,14 @@ def start_analysis():
         return
 
     print(f"{timestamp} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
-    Main_Functions.main(file_path, llm_selection, API_KEY)
+
+    # Define to run processes in thread
+    def process_in_thread():
+        Main_Functions.main(file_path, llm_selection, API_KEY)
+
+    thread = threading.Thread(target=process_in_thread)
+    thread.start()
+    print(f"{timestamp} - Started processing in a separate thread.")
 
 # Start button
 button_image_1 = PhotoImage(

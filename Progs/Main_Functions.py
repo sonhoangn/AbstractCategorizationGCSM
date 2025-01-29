@@ -6,8 +6,11 @@ from tkinter import Tk, filedialog
 from IPython.display import HTML, display
 import webbrowser
 import os
+from pathlib import Path
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+RESULTS_PATH = Path(__file__).parent / "results"
+os.makedirs(RESULTS_PATH, exist_ok=True)
 
 # Define method to categorize abstract
 def categorize_abstract(index, abstract, model):
@@ -215,7 +218,7 @@ def write_to_excel(df_results, file_path):
     columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
-    output_file = file_path.replace(".xlsx", "_processed.xlsx")
+    output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
     print(f"{timestamp} - Results are saved to {output_file}")
@@ -228,9 +231,7 @@ def unexpected_characters(text):
 def browser_display(df_final):
     html_table = unexpected_characters(df_final).to_html(index=False)
 
-    # Get the current working directory
-    current_dir = os.getcwd()
-    output_path = os.path.join(current_dir, "Sessions_schedule.html")
+    output_path = RESULTS_PATH / "Sessions_schedule.html"
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_table)

@@ -9,7 +9,7 @@ from tkinter import Tk, filedialog
 from IPython.display import HTML, display
 import webbrowser
 import os
-import tempfile
+# import tempfile
 
 def main():
     #Generative AI models selection. Only 2 of them are actually usable for a free public API key from google
@@ -175,6 +175,7 @@ def main():
         {df_selected_column.to_markdown(index=False)}
         Response format:
         - Abstract number belongs to group number: group number"""
+        print(df_selected_column)
         response_3 = model.generate_content(prompt_3)
         # Define an array containing session numbers
         session_numbers = []
@@ -296,13 +297,13 @@ def main():
 
     #Display results via browser
     def browser_display(df_final):
-        html_table = df_final.to_html(index=False)
+        html_table = unexpected_characters(df_final).to_html(index=False)
 
         # Get the current working directory
         current_dir = os.getcwd()
-        output_path = os.path.join(current_dir, "dataframe.html")
+        output_path = os.path.join(current_dir, "Sessions_schedule.html")
 
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_table)
 
         try:
@@ -314,6 +315,11 @@ def main():
     if __name__ == "__main__":
         #Select a spreadsheet
         root = Tk()
+        #Configure pop-up dialog box
+        root.attributes('-alpha', 0.01)
+        root.attributes('-topmost', True)
+        root.tk.eval(f'tk::PlaceWindow {root._w} center')
+
         root.withdraw()
         file_path = filedialog.askopenfilename(
             title="Select Abstracts List",
@@ -334,6 +340,7 @@ def main():
             model = genai.GenerativeModel(gam)
 
         #Transforming original spreadsheet into machine-readable data frame
+        print("Analyzing...")
         df = pd.read_excel(file_path)
         df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
 

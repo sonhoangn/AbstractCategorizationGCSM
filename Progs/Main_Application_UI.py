@@ -6,7 +6,7 @@ from pathlib import Path
 import tkinter
 import Abstract_Categorization_working_with_Spreadsheet
 
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
 
 
 FILE_PATH = Path(__file__).parent
@@ -140,6 +140,8 @@ button_2.place(
 )
 
 # LLM Selection box
+llm_options = ["gemini-1.5-flash", "gemini-pro", "palm-2"]
+
 entry_image_3 = PhotoImage(
     file=relative_to_assets("entry_2.png"))
 entry_bg_3 = canvas.create_image(
@@ -147,11 +149,11 @@ entry_bg_3 = canvas.create_image(
     190.0,
     image=entry_image_3
 )
-entry_3 = Entry(
-    bd=0,
-    bg="#FFFFFF",
-    fg="#000716",
-    highlightthickness=0
+entry_3 = ttk.Combobox(
+    window,
+    values=llm_options,
+    state="readonly",
+    width=334
 )
 entry_3.place(
     x=386.0,

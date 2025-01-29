@@ -8,7 +8,7 @@ import webbrowser
 import os
 from pathlib import Path
 
-timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 RESULTS_PATH = Path(__file__).parent / "results"
 os.makedirs(RESULTS_PATH, exist_ok=True)
 
@@ -163,7 +163,7 @@ def session_assignment(df_results, model):
     result = pd.DataFrame(session_numbers, columns=["Session No."])
     # Turn this thing on in case debug is required
     # print(result)
-    print(f"{timestamp} - Session assignment completed...")
+    print("- Session assignment completed...")
     return result
 
 def input_from_spreadsheet(file_path, model):
@@ -175,7 +175,7 @@ def input_from_spreadsheet(file_path, model):
     results = []
     # Check if abstract column present in the spreadsheet
     if "Abstract" not in df.columns:
-        print(f"{timestamp} - Unable to locate abstracts list.")
+        print("- Unable to locate abstracts list.")
         return None
     # Start prompting for each abstract
     for index, row in df.iterrows():
@@ -195,16 +195,16 @@ def input_from_spreadsheet(file_path, model):
 
             # Print progress message every 10 abstracts
             if (index + 1) % 10 == 0:
-                print(f"{timestamp} - No. of abstracts processed: {index + 1}")
+                print(f"- No. of abstracts processed: {index + 1}")
             # Include a delay between prompt request
             time.sleep(6)
         # Define exception
         except Exception as e:
-            print(f"{timestamp} - Error processing abstract {index + 1}: {e}")
+            print(f"- Error processing abstract {index + 1}: {e}")
             results.append(
                 (index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
     # Calculate and print total processing time
-    print(f"{timestamp} - All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
+    print(f"- All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
     # Create a Data frame with results
     df_results = pd.DataFrame(results,
                               columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope",
@@ -221,7 +221,7 @@ def write_to_excel(df_results, file_path):
     output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
-    print(f"{timestamp} - Results are saved to {output_file}")
+    print(f"- Results are saved to {output_file}")
     browser_display(df_final)
 
 def unexpected_characters(text):
@@ -238,16 +238,16 @@ def browser_display(df_final):
 
     try:
         webbrowser.open(output_path)
-        print(f"{timestamp} - DataFrame displayed in browser: {output_path}")
+        print(f"- DataFrame displayed in browser: {output_path}")
     except Exception as e:
-        print(f"{timestamp} - Error opening HTML file in browser: {e}")
+        print(f"- Error opening HTML file in browser: {e}")
 
 def main(file_path, llm_selection, API_KEY):
-    print(f"{timestamp} - Start analyzing!")
+    print("- Start analyzing!")
     # Check if a spreadsheet containing data has been selected
     model = None
     if not file_path:
-        print(f"{timestamp} - No file selected.")
+        print("- No file selected.")
         return
 
     if file_path:
@@ -258,7 +258,7 @@ def main(file_path, llm_selection, API_KEY):
         model = genai.GenerativeModel(gam)
 
     # Transforming original spreadsheet into machine-readable data frame
-    print(f"{timestamp} - Analyzing...")
+    print("- Analyzing...")
     df = pd.read_excel(file_path)
     df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
 

@@ -1,5 +1,5 @@
 import sys
-import datetime
+# import datetime
 import Main_Functions
 from pathlib import Path
 import tkinter
@@ -12,7 +12,7 @@ FILE_PATH = Path(__file__).parent
 ASSETS_PATH = FILE_PATH / "assets" / "frame0"
 ICON_PATH = FILE_PATH / "pictures" / "button_Small.png"
 
-timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def instruction_message_terminal(event):
     message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
@@ -119,7 +119,7 @@ def browse_ss():
         entry_2.delete(0, "end")
         entry_2.insert(0, file_path)
 
-    print(f"{timestamp} - Use data retrieved from {file_path}.")
+    print(f"- Use data retrieved from {file_path}.")
     return file_path
 
 # Browse file button
@@ -172,7 +172,7 @@ def save_llm_selection():
         messagebox.showwarning("Warning", "No LLM selection detected!")
         return
 
-    print(f"{timestamp} - LLM: {llm_selection}, selected!")
+    print(f"- LLM: {llm_selection}, selected!")
     return llm_selection
 
 # LLM Selection button
@@ -223,7 +223,7 @@ def save_api_key():
         messagebox.showwarning("Warning", "No API Key detected!")
         return
 
-    print(f"{timestamp} - API Key: {API_KEY}, provided!")
+    print(f"- API Key: {API_KEY}, provided!")
     return API_KEY
 
 
@@ -247,7 +247,7 @@ button_3.place(
 # Running main Function
 def start_analysis():
     global file_path, llm_selection, API_KEY
-    print(f"{timestamp} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
+    print(f"- Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
     if not file_path:
         messagebox.showwarning("Warning", "No file selected!")
         return
@@ -258,7 +258,7 @@ def start_analysis():
         messagebox.showwarning("Warning", "No API Key provided!")
         return
 
-    print(f"{timestamp} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
+    print(f"- Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
 
     # Define to run processes in thread
     def process_in_thread():
@@ -266,7 +266,7 @@ def start_analysis():
 
     thread = threading.Thread(target=process_in_thread)
     thread.start()
-    print(f"{timestamp} - Started processing in a separate thread.")
+    print(f"- Started processing in a separate thread.")
 
 # Start button
 button_image_1 = PhotoImage(
@@ -292,7 +292,7 @@ button_info = Button(
     image=button_image_info,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print(f"{timestamp} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
+    command=lambda: print(f"- Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
                           "\nKindly refer to all source codes and revisions on:"
                           "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
                           "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research paper, thus helping with putting them into sessions based on their similarity level."),
@@ -323,9 +323,9 @@ try:
     icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
 except FileNotFoundError:
-    print(f"{timestamp} - Error: Icon file not found at {ICON_PATH}")
+    print(f"- Error: Icon file not found at {ICON_PATH}")
 except Exception as e:
-    print(f"{timestamp} - Error loading icon: {e}")
+    print(f"- Error loading icon: {e}")
 
 # Redirect stdout to the text area
 class StdoutRedirector(object):
@@ -342,7 +342,7 @@ class StdoutRedirector(object):
         pass
 
 sys.stdout = StdoutRedirector(entry_1)
-print(f"{timestamp} - Hello there, please kindly provide all required data before pressing the START button.")
+print(f"- Hello there, please kindly provide all required data before pressing the START button.")
 
 window.resizable(False, False)
 window.mainloop()

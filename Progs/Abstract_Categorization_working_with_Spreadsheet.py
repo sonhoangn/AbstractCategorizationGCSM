@@ -250,7 +250,7 @@ def main():
             #If abstract exists, continue prompting with genai
             try:
                 overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(index, abstract)
-                time.sleep(6)
+                time.sleep(3)
                 affiliation_org, affiliation_country = affiliation_search(index, abstract, paper_title, authors_list, nation)
                 results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, affiliation_org, affiliation_country, prompt_tokens, response_tokens))
 
@@ -258,7 +258,7 @@ def main():
                 if (index + 1) % 10 == 0:
                     print(f"No. of abstracts processed: {index + 1}")
                 # Include a delay between prompt request
-                time.sleep(6)
+                time.sleep(3)
             #Define exception
             except Exception as e:
                 print(f"Error processing abstract {index+1}: {e}")
@@ -349,7 +349,7 @@ def main():
 
         if df_results is None:
             return
-        time.sleep(5)
+        time.sleep(2)
 
         #Preliminary session assignment based on preliminary data processing
         session_no = session_assignment(df_results)

@@ -1,5 +1,5 @@
 import sys
-# import datetime
+import datetime
 import Main_Functions
 from pathlib import Path
 import tkinter
@@ -118,8 +118,8 @@ def browse_ss():
     if file_path:
         entry_2.delete(0, "end")
         entry_2.insert(0, file_path)
-
-    print(f"- Use data retrieved from {file_path}.")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Use data retrieved from {file_path}.")
     return file_path
 
 # Browse file button
@@ -172,7 +172,8 @@ def save_llm_selection():
         messagebox.showwarning("Warning", "No LLM selection detected!")
         return
 
-    print(f"- LLM: {llm_selection}, selected!")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - LLM: {llm_selection}, selected!")
     return llm_selection
 
 # LLM Selection button
@@ -223,7 +224,8 @@ def save_api_key():
         messagebox.showwarning("Warning", "No API Key detected!")
         return
 
-    print(f"- API Key: {API_KEY}, provided!")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - API Key: {API_KEY}, provided!")
     return API_KEY
 
 
@@ -247,7 +249,8 @@ button_3.place(
 # Running main Function
 def start_analysis():
     global file_path, llm_selection, API_KEY
-    print(f"- Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
     if not file_path:
         messagebox.showwarning("Warning", "No file selected!")
         return
@@ -258,7 +261,8 @@ def start_analysis():
         messagebox.showwarning("Warning", "No API Key provided!")
         return
 
-    print(f"- Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
 
     # Define to run processes in thread
     def process_in_thread():
@@ -266,7 +270,8 @@ def start_analysis():
 
     thread = threading.Thread(target=process_in_thread)
     thread.start()
-    print(f"- Started processing in a separate thread.")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Started processing in a separate thread.")
 
 # Start button
 button_image_1 = PhotoImage(
@@ -295,7 +300,7 @@ button_info = Button(
     command=lambda: print(f"- Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
                           "\nKindly refer to all source codes and revisions on:"
                           "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research paper, thus helping with putting them into sessions based on their similarity level."),
+                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level."),
     relief="flat"
 )
 button_info.place(
@@ -323,9 +328,11 @@ try:
     icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
 except FileNotFoundError:
-    print(f"- Error: Icon file not found at {ICON_PATH}")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Error: Icon file not found at {ICON_PATH}")
 except Exception as e:
-    print(f"- Error loading icon: {e}")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Error loading icon: {e}")
 
 # Redirect stdout to the text area
 class StdoutRedirector(object):
@@ -342,7 +349,8 @@ class StdoutRedirector(object):
         pass
 
 sys.stdout = StdoutRedirector(entry_1)
-print(f"- Hello there, please kindly provide all required data before pressing the START button.")
+current_time = datetime.datetime.now()
+print(f"{current_time} - Hello there, please kindly provide all required data before pressing the START button.")
 
 window.resizable(False, False)
 window.mainloop()

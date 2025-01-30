@@ -8,6 +8,7 @@ import webbrowser
 import os
 from pathlib import Path
 
+
 # timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 RESULTS_PATH = Path(__file__).parent / "results"
 os.makedirs(RESULTS_PATH, exist_ok=True)
@@ -62,6 +63,8 @@ def categorize_abstract(index, abstract, model):
     """
     # Configure generative ai response
     response = model.generate_content(prompt)
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Categorization response for Abstract No. {index} provided. Analyzing...")
     # Find the best fit overall category name from the response
     line1 = [line for line in response.text.split("\n") if line.startswith("- Overall Category: ")]
     if line1:
@@ -103,6 +106,8 @@ def categorize_abstract(index, abstract, model):
     prompt_tokens = str(model.count_tokens(prompt)).split(": ")[1].strip()
     response_tokens = str(model.count_tokens(response.text)).split(": ")[1].strip()
     # Return values from method
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, continue with affiliation suggestion for this one.")
     return overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens
 
 # Search for affiliation
@@ -123,6 +128,8 @@ def affiliation_search(index, abstract, paper_title, authors_list, nation, model
     """
     # Configure generative ai response
     response_2 = model.generate_content(prompt_2)
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Affiliation suggestion for Abstract No. {index} provided. Analyzing...")
     # Extract the target organization name from Gen AI's response
     line7 = [line for line in response_2.text.split("\n") if line.startswith("- Affiliation: ")]
     if line7:
@@ -131,6 +138,8 @@ def affiliation_search(index, abstract, paper_title, authors_list, nation, model
         affiliation_org = "N/A"
     # Assign nation
     affiliation_country = nation
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Abstract No. {index} completes preliminary analysis, continue with the next abstract...")
     return affiliation_org, affiliation_country
 
 def session_assignment(df_results, model):
@@ -149,6 +158,8 @@ def session_assignment(df_results, model):
     - Abstract number belongs to group number: group number"""
     # print(df_selected_column)
     response_3 = model.generate_content(prompt_3)
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Response for Session assignment provided. Analyzing...")
     # Define an array containing session numbers
     session_numbers = []
     lines = response_3.text.split("\n")
@@ -163,7 +174,8 @@ def session_assignment(df_results, model):
     result = pd.DataFrame(session_numbers, columns=["Session No."])
     # Turn this thing on in case debug is required
     # print(result)
-    print("- Session assignment completed...")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Session assignment completed...")
     return result
 
 def input_from_spreadsheet(file_path, model):
@@ -173,6 +185,8 @@ def input_from_spreadsheet(file_path, model):
     start_time = time.time()
     # Define response from genai as an array
     results = []
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Extracting abstracts from raw data...")
     # Check if abstract column present in the spreadsheet
     if "Abstract" not in df.columns:
         print("- Unable to locate abstracts list.")
@@ -188,10 +202,9 @@ def input_from_spreadsheet(file_path, model):
             overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(
                 index, abstract, model)
             time.sleep(6)
-            affiliation_org, affiliation_country = affiliation_search(index, abstract, paper_title, authors_list,
-                                                                      nation, model)
-            results.append((index, abstract, overall_category, research_field, research_method, scope, purpose,
-                            forecasted_time, affiliation_org, affiliation_country, prompt_tokens, response_tokens))
+            # affiliation_org, affiliation_country = affiliation_search(index, abstract, paper_title, authors_list, nation, model)
+            # results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, affiliation_org, affiliation_country, prompt_tokens, response_tokens))
+            results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens))
 
             # Print progress message every 10 abstracts
             if (index + 1) % 10 == 0:
@@ -201,27 +214,30 @@ def input_from_spreadsheet(file_path, model):
         # Define exception
         except Exception as e:
             print(f"- Error processing abstract {index + 1}: {e}")
-            results.append(
-                (index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
+            # results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
+            results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
     # Calculate and print total processing time
-    print(f"- All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
     # Create a Data frame with results
-    df_results = pd.DataFrame(results,
-                              columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope",
-                                       "Research Purpose", "Forecasted Presentation Duration", "Organization",
-                                       "Country", "Prompt token count", "Response token count"])
+    # df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Organization", "Country", "Prompt token count", "Response token count"])
+    df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope",
+                                       "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
     return df_results
 
 
 # Write results to spreadsheet
 def write_to_excel(df_results, file_path):
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Writing results to the final spreadsheet")
     columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
     output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
-    print(f"- Results are saved to {output_file}")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Results are saved to {output_file}")
     browser_display(df_final)
 
 def unexpected_characters(text):
@@ -229,6 +245,8 @@ def unexpected_characters(text):
 
 # Display results via browser
 def browser_display(df_final):
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Converting result spreadsheet to readable html format.")
     html_table = unexpected_characters(df_final).to_html(index=False)
 
     output_path = RESULTS_PATH / "Sessions_schedule.html"
@@ -238,16 +256,20 @@ def browser_display(df_final):
 
     try:
         webbrowser.open(output_path)
-        print(f"- DataFrame displayed in browser: {output_path}")
+        current_time = datetime.datetime.now()
+        print(f"{current_time} - DataFrame displayed in browser: {output_path}")
     except Exception as e:
-        print(f"- Error opening HTML file in browser: {e}")
+        current_time = datetime.datetime.now()
+        print(f"{current_time} - Error opening HTML file in browser: {e}")
 
 def main(file_path, llm_selection, API_KEY):
-    print("- Start analyzing!")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Start analyzing!")
     # Check if a spreadsheet containing data has been selected
     model = None
     if not file_path:
-        print("- No file selected.")
+        current_time = datetime.datetime.now()
+        print(f"{current_time} - No file selected.")
         return
 
     if file_path:
@@ -258,7 +280,8 @@ def main(file_path, llm_selection, API_KEY):
         model = genai.GenerativeModel(gam)
 
     # Transforming original spreadsheet into machine-readable data frame
-    print("- Analyzing...")
+    current_time = datetime.datetime.now()
+    print(f"{current_time} - Analyzing...")
     df = pd.read_excel(file_path)
     df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
 

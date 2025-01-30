@@ -107,7 +107,8 @@ def categorize_abstract(index, abstract, model):
     response_tokens = str(model.count_tokens(response.text)).split(": ")[1].strip()
     # Return values from method
     current_time = datetime.datetime.now()
-    print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, continue with affiliation suggestion for this one.")
+    # print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, continue with affiliation suggestion for this one.")
+    print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, onto the next abstract.")
     return overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens
 
 # Search for affiliation
@@ -142,8 +143,8 @@ def affiliation_search(index, abstract, paper_title, authors_list, nation, model
     print(f"{current_time} - Abstract No. {index} completes preliminary analysis, continue with the next abstract...")
     return affiliation_org, affiliation_country
 
-def session_assignment(df_results, model):
-    columns_to_analyze = ['No.', 'Overall Category', 'Topic', 'Organization', 'Country']
+def session_assignment(df, df_results, model):
+    columns_to_analyze = ['No.', 'Overall Category', 'Topic']
     df_selected_column = df_results[columns_to_analyze]
     prompt_3 = f"""Review the data table consisting of list of abstracts and their associated information such as authors, countries, topic and overall category. Based on their provided info, assign each abstract into group with rules as follows:
     1. Strict rule: one group contain a maximum number of 6 abstracts only. Do not assign additional abstract to a group that already has 6 abstracts assigned. If a group have more than 6 abstracts assigned to it, analyze the abstracts within that group to assign them into smaller groups. Ensure the new smaller groups have no more than 6 abstracts per group. If a group have less than 6 abstracts assigned to it, then the assigned group would be unchanged for those abstracts.
@@ -193,10 +194,10 @@ def input_from_spreadsheet(file_path, model):
         return None
     # Start prompting for each abstract
     for index, row in df.iterrows():
-        paper_title = row["Paper Title"]
+        # paper_title = row["Paper Title"]
         abstract = row["Abstract"]
-        authors_list = row["Authors"]
-        nation = row["Country"]
+        # authors_list = row["Authors"]
+        # nation = row["Country"]
         # If abstract exists, continue prompting with genai
         try:
             overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(
@@ -230,7 +231,7 @@ def input_from_spreadsheet(file_path, model):
 def write_to_excel(df_results, file_path):
     current_time = datetime.datetime.now()
     print(f"{current_time} - Writing results to the final spreadsheet")
-    columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
+    columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
     output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
@@ -283,7 +284,7 @@ def main(file_path, llm_selection, API_KEY):
     current_time = datetime.datetime.now()
     print(f"{current_time} - Analyzing...")
     df = pd.read_excel(file_path)
-    df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors", "Country"])
+    df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors"])
 
     # Preliminary data processing using original spreadsheet data
     df_results = input_from_spreadsheet(file_path, model)
@@ -293,7 +294,7 @@ def main(file_path, llm_selection, API_KEY):
     time.sleep(5)
 
     # Preliminary session assignment based on preliminary data processing
-    session_no = session_assignment(df_results, model)
+    session_no = session_assignment(df, df_results, model)
 
     # Preparing final data in order to have them exported into the target human-readable spreadsheet
     df_results["Session No."] = session_no

@@ -140,7 +140,7 @@ button_2.place(
 )
 
 # LLM Selection box
-llm_options = ["gemini-1.5-flash", "gemini-pro", "palm-2"]
+llm_options = ["gemini-1.5-flash", "gemini-1.5-pro", "palm-2"]
 
 entry_image_3 = PhotoImage(
     file=relative_to_assets("entry_2.png"))

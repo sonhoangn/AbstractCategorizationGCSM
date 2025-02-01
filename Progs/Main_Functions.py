@@ -2,69 +2,30 @@ import datetime
 import google.generativeai as genai
 import pandas as pd
 import time
-from tkinter import Tk, filedialog
+from collections import defaultdict
 from IPython.display import HTML, display
 import webbrowser
 import os
 from pathlib import Path
 
-
-# timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 RESULTS_PATH = Path(__file__).parent / "results"
 os.makedirs(RESULTS_PATH, exist_ok=True)
+
+def ct():
+    return datetime.datetime.now()
 
 # Define method to categorize abstract
 def categorize_abstract(index, abstract, model):
     # Setting up prompt
     prompt = f"""
-    Analyze the following abstract, decide which overall categories (the overall categories must be chosen from one of the 4 predefined topics) would best describe the abstract, decide the field of research (must be chosen from one of the sub-topics of the chosen predefined topic) that the abstract is targeting, identify the main research method that the abstract is addressing, decide the scope of the abstract based on the provided info by choosing a score between 1 to 6 (with 1 being extremely narrow scope and 6 being extremely broad scope), and forecast whether the presentation of the topic associated with the target abstract would be brief (less than 10 minutes) or long (up to 15 minutes) based on the information of the topic to be covered as described in the abstract. The answer for Overall Category must be strictly chosen only from the list of 4 predefined topics (do not generate new topics that is not the same as the 4 predefined topics), and must be cleaned, free of any extra special characters. The answer for Field of research must be strictly chosen from the list of subtopics (do not generate new topics that is not the same as the provided subtopics), and must be cleaned, free of any extra special characters. The answer for other part must be concise and no longer than 3 words. The response should also include the number of token for the prompt and the response for troubleshooting and billing purpose.
     Paper index:
     {index}
     Abstract:
     {abstract}
-    Predefined topics and their sub-topics:
-    1. Predefined Topic: Sustainable Materials & Products
-    - Sub-topic: Low carbon materials and critical raw materials
-    - Sub-topic: Material recycling
-    - Sub-topic: Product design, redesign and innovation
-    - Sub-topic: Product recovery, reuse and remanufacturing
-    - Sub-topic: Product life cycle, information and knowledge management
-    - Sub-topic: Life cycle assessment, risk assessment
-    - Sub-topic: Sustainable business models
-    2. Predefined Topic: Sustainable Manufacturing Processes:
-    - Sub-topic: Manufacturing processes, tools and equipment
-    - Sub-topic: Energy and resource efficiency
-    - Sub-topic: Resource utilization and waste reduction
-    - Sub-topic: Maintenance, repair and overhaul for machines and equipment
-    3. Predefined Topic: Sustainable Manufacturing Systems:
-    - Sub-topic: Manufacturing system design
-    - Sub-topic: Simulation tools for manufacturing system design/layout testing
-    - Sub-topic: Sustainable supply chain
-    - Sub-topic: Data usage and sustainable manufacturing/production planning
-    - Sub-topic: Metrics for sustainable manufacturing systems
-    4. Predefined Topic: Crosscutting Topics:
-    - Sub-topic: Industry 4.0 and sustainable manufacturing
-    - Sub-topic: Circular economy
-    - Sub-topic: CO2 neutral production
-    - Sub-topic: Regional integration for sustainability
-    - Sub-topic: Sustainable energy transition / Sustainable energy development
-    - Sub-topic: Policy design for sustainability
-    - Sub-topic: Engineering education towards sustainable development
-    - Sub-topic: Regional integration of sustainability in South East Asia
-    Response format:
-    - Overall Category: Category name
-    - Field of research: Field name
-    - Research methods: Methodology
-    - Scope: Score Number between 1 to 6
-    - Research Purpose: Theoretical or Applied
-    - Forecasted Presentation Time: Brief or Standard
-    - Prompt token count
-    - Response token count
     """
     # Configure generative ai response
     response = model.generate_content(prompt)
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Categorization response for Abstract No. {index} provided. Analyzing...")
+    print(f"{ct()} - Categorization response for Abstract No. {index} provided. Analyzing...")
     # Find the best fit overall category name from the response
     line1 = [line for line in response.text.split("\n") if line.startswith("- Overall Category: ")]
     if line1:
@@ -106,79 +67,72 @@ def categorize_abstract(index, abstract, model):
     prompt_tokens = str(model.count_tokens(prompt)).split(": ")[1].strip()
     response_tokens = str(model.count_tokens(response.text)).split(": ")[1].strip()
     # Return values from method
-    current_time = datetime.datetime.now()
     # print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, continue with affiliation suggestion for this one.")
-    print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, onto the next abstract.")
+    print(f"{ct()} - Abstract No. {index} finishes preliminary categorization, onto the next abstract.")
     return overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens
 
-# Search for affiliation
-def affiliation_search(index, abstract, paper_title, authors_list, nation, model):
-    prompt_2 = f"""Based on the paper tile, list of authors, its abstract and the nation name. Extract the name of the organization, university, research institutions, etc. that published this research paper (the name of the organization is usually associated with the first author, and would be contained in parentheses next to the name of the first author for every abstract). The answer must be clean, clear of any special character, and should be no more than 5 words (names of the organization can be in the form of an abbreviation).
-    Paper index:
-    {index}
-    Abstract
-    {abstract}
-    Paper Title:
-    {paper_title}
-    Authors List:
-    {authors_list}
-    Nation:
-    {nation}
-    Response format:
-    - Affiliation: Name of the organization (can not be N/A)
-    """
-    # Configure generative ai response
-    response_2 = model.generate_content(prompt_2)
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Affiliation suggestion for Abstract No. {index} provided. Analyzing...")
-    # Extract the target organization name from Gen AI's response
-    line7 = [line for line in response_2.text.split("\n") if line.startswith("- Affiliation: ")]
-    if line7:
-        affiliation_org = line7[0].split(": ")[1].strip()
-    else:
-        affiliation_org = "N/A"
-    # Assign nation
-    affiliation_country = nation
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Abstract No. {index} completes preliminary analysis, continue with the next abstract...")
-    return affiliation_org, affiliation_country
+# Session Assignment
+def session_assignment(df):
+    # Initial Grouping based on identical Topics
+    df['Grouping'] = df.groupby('Topic').ngroup() + 1
+    # Count items per Grouping
+    df["Count"] = df.groupby("Grouping")["Topic"].transform("count")
+    # Initialize a new column for refined grouping
+    df["Refined Grouping"] = ""
+    refined_groups = []
+    for group, subset in df.groupby("Grouping"):
+        if len(subset) <= 6:
+            refined_groups.extend([group] * len(subset))
+        else:
+            # Create smaller groups, using an index-based suffix
+            for i, (_, row) in enumerate(subset.iterrows()):
+                refined_groups.append(f"{group}_{i // 6 + 1}")
 
-def session_assignment(df, df_results, model):
-    columns_to_analyze = ['No.', 'Overall Category', 'Topic']
-    df_selected_column = df_results[columns_to_analyze]
-    prompt_3 = f"""Review the data table consisting of list of abstracts and their associated information such as authors, countries, topic and overall category. Based on their provided info, assign each abstract into group with rules as follows:
-    1. Strict rule: one group contain a maximum number of 6 abstracts only. Do not assign additional abstract to a group that already has 6 abstracts assigned. If a group have more than 6 abstracts assigned to it, analyze the abstracts within that group to assign them into smaller groups. Ensure the new smaller groups have no more than 6 abstracts per group. If a group have less than 6 abstracts assigned to it, then the assigned group would be unchanged for those abstracts.
-    2. Strict rule: The number of groups have to satisfy the number of abstracts and the first rule. For example, if there are 60 abstracts, then there should be at least 10 groups.
-    3. Strict rule: Abstracts in the same group must have similar assigned topic (highest priority), or overall category (2nd highest priority).
-    4. Optional rule: Ensure each group have abstracts from diverse countries.
-    5. Answer must be clean and must be a group number for the abstract being analyzed. The group number should start from 1.
-    6. Review every abstract and provide answer for each abstract based on their index number in the data table (Examples of a correct response: - Abstract number 1 belongs to group: 1; - Abstract number 23 belongs to group: 2; etc.)
-    Data table to be analyzed:
-    {df_selected_column.to_markdown(index=False)}
-    Response format:
-    - Abstract number belongs to group number: group number"""
-    # print(df_selected_column)
-    response_3 = model.generate_content(prompt_3)
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Response for Session assignment provided. Analyzing...")
-    # Define an array containing session numbers
-    session_numbers = []
-    lines = response_3.text.split("\n")
+    df["Refined Grouping"] = refined_groups
 
-    for line in lines:
-        if line.startswith("- "):
-            try:
-                session_number = line.split(": ")[1].strip()
-                session_numbers.append(session_number)
-            except IndexError:
-                session_numbers.append("N/A")
-    result = pd.DataFrame(session_numbers, columns=["Session No."])
-    # Turn this thing on in case debug is required
-    # print(result)
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Session assignment completed...")
-    return result
+    return df
+# Merge smaller groups
+def merge_groups(df):
+    # Count items per refined group
+    group_counts = df.groupby("Refined Grouping").size()
+    # Identify small groups of less than 6 row items
+    small_groups = {g: df[df["Grouping"] == g] for g, size in group_counts.items() if size < 6}
+    # Mapping "Overall Category" to small groups
+    category_to_groups = defaultdict(set)
+    for group, rows in small_groups.items():
+        unique_categories = rows["Overall Category"].unique()
+        for category in unique_categories:
+            category_to_groups[category].add(group)
+    # Merge small groups into exactly 6-row groups
+    merged_groups = {}
+    # Track assigned group
+    assigned = set()
+    # New Group assignment counter
+    new_group_id = 1
+    for group, rows in small_groups.items():
+        if group is assigned:
+            continue
+        # Start a new merged group
+        current_merge = [group]
+        assigned.add(group)
+        # Find potential merge partners
+        for category in rows["Overall Category"].unique():
+            possible_partners = category_to_groups[category] - set(current_merge) - assigned
+            for partner in possible_partners:
+                if len(df[df["Grouping"].isin(current_merge)]) + len(df[df["Grouping"] == partner]) <= 6:
+                    current_merge.append(partner)
+                    assigned.add(partner)
+                # Stop merging if exactly 6 rows are reached
+                if len(df[df["Grouping"].isin(current_merge)]) == 6:
+                    break
+            if len(df[df["Grouping"].isin(current_merge)]) == 6:
+                break
+        # Assigned new ID for merged group
+        for g in current_merge:
+            merged_groups[g] = f"Merged_{new_group_id}"
+        new_group_id += 1
 
+    return merged_groups
 def input_from_spreadsheet(file_path, model):
     # Create data frame from the provided spreadsheet
     df = pd.read_excel(file_path)
@@ -186,59 +140,52 @@ def input_from_spreadsheet(file_path, model):
     start_time = time.time()
     # Define response from genai as an array
     results = []
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Extracting abstracts from raw data...")
+    print(f"{ct()} - Extracting abstracts from raw data...")
     # Check if abstract column present in the spreadsheet
     if "Abstract" not in df.columns:
-        print("- Unable to locate abstracts list.")
+        print(f"{ct()} - Unable to locate abstracts list.")
         return None
     # Start prompting for each abstract
     for index, row in df.iterrows():
-        # paper_title = row["Paper Title"]
         abstract = row["Abstract"]
-        # authors_list = row["Authors"]
-        # nation = row["Country"]
         # If abstract exists, continue prompting with genai
         try:
             overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(
                 index, abstract, model)
             time.sleep(6)
-            # affiliation_org, affiliation_country = affiliation_search(index, abstract, paper_title, authors_list, nation, model)
-            # results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, affiliation_org, affiliation_country, prompt_tokens, response_tokens))
             results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens))
-
             # Print progress message every 10 abstracts
             if (index + 1) % 10 == 0:
-                print(f"- No. of abstracts processed: {index + 1}")
+                print(f"{ct()} - No. of abstracts processed: {index + 1}")
             # Include a delay between prompt request
             time.sleep(6)
         # Define exception
         except Exception as e:
-            print(f"- Error processing abstract {index + 1}: {e}")
-            # results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
+            print(f"{ct()} - Error processing abstract {index + 1}: {e}")
             results.append((index, abstract, "Error", "Error", "Error", "Error", "Error", "Error", 0, 0))
     # Calculate and print total processing time
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
+    print(f"{ct()} - All {index + 1} abstracts processed in {(time.time() - start_time):.2f} seconds.")
     # Create a Data frame with results
-    # df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Organization", "Country", "Prompt token count", "Response token count"])
-    df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope",
-                                       "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
+    df_results = pd.DataFrame(results, columns=["No.", "Abstract", "Overall Category", "Topic", "Research methods", "Scope", "Research Purpose", "Forecasted Presentation Duration", "Prompt token count", "Response token count"])
+    df_results["Paper Title"] = df[['Paper Title']]
+    df_results["Paper ID"] = df[['Paper ID']]
+    df_results["Authors"] = df[['Authors']]
+    df_results["Country"] = df[['Country']]
+    df_results_reorg = df_results[['No.', 'Paper ID', 'Paper Title', 'Authors', 'Country', 'Overall Category', 'Topic']]
+    df_results = df_results_reorg.sort_values('Topic')
     return df_results
 
 
 # Write results to spreadsheet
 def write_to_excel(df_results, file_path):
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Writing results to the final spreadsheet")
-    columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors']
+    print(f"{ct()} - Writing results to the final spreadsheet")
+    columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
     output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Results are saved to {output_file}")
+    print(f"{ct()} - Results are saved to {output_file}")
     browser_display(df_final)
 
 def unexpected_characters(text):
@@ -246,8 +193,7 @@ def unexpected_characters(text):
 
 # Display results via browser
 def browser_display(df_final):
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Converting result spreadsheet to readable html format.")
+    print(f"{ct()} - Converting result spreadsheet to readable html format.")
     html_table = unexpected_characters(df_final).to_html(index=False)
 
     output_path = RESULTS_PATH / "Sessions_schedule.html"
@@ -257,20 +203,16 @@ def browser_display(df_final):
 
     try:
         webbrowser.open(output_path)
-        current_time = datetime.datetime.now()
-        print(f"{current_time} - DataFrame displayed in browser: {output_path}")
+        print(f"{ct()} - DataFrame displayed in browser: {output_path}")
     except Exception as e:
-        current_time = datetime.datetime.now()
-        print(f"{current_time} - Error opening HTML file in browser: {e}")
+        print(f"{ct()} - Error opening HTML file in browser: {e}")
 
 def main(file_path, llm_selection, API_KEY):
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Start analyzing!")
+    print(f"{ct()} - Start analyzing!")
     # Check if a spreadsheet containing data has been selected
     model = None
     if not file_path:
-        current_time = datetime.datetime.now()
-        print(f"{current_time} - No file selected.")
+        print(f"{ct()} - No file selected.")
         return
 
     if file_path:
@@ -278,30 +220,79 @@ def main(file_path, llm_selection, API_KEY):
         pak = API_KEY
         gam = llm_selection
         genai.configure(api_key=pak)
-        model = genai.GenerativeModel(gam)
+        model = genai.GenerativeModel(
+            model_name=gam,
+            system_instruction="""
+            You are an expert in sustainable manufacturing that is excellent with analyzing research paper abstracts. Your primary goal is to categorize the abstracts based on predefined topics and provide specific information in a structured format.
+        
+            Instructions:
+        
+            1. Analyze the provided abstract and determine the most appropriate "Overall Category."  This category *must* be chosen from one of the following four predefined topics. Do not create new categories.
+            2. Identify the specific "Field of Research" that best describes the abstract. This field *must* be chosen from the sub-topics listed under the chosen "Overall Category." Do not create new sub-topics.
+            3. Identify the primary "Research Method" used in the research described in the abstract.  Provide a concise answer (no more than three words).
+            4. Assess the "Scope" of the research. Assign a score from 1 to 6 (1 = extremely narrow, 6 = extremely broad).
+            5. Determine the "Research Purpose."  Is the research primarily "Theoretical" or "Applied"?
+            6. Forecast the "Presentation Time" needed for the topic. Choose either "Brief" (less than 10 minutes) or "Long" (up to 15 minutes).
+            7. Provide the "Prompt token count" and "Response token count" for billing and troubleshooting.
+        
+            Predefined Topics and Sub-topics:
+        
+            1. Sustainable Materials & Products:
+               - Low carbon materials and critical raw materials
+               - Material recycling
+               - Product design, redesign and innovation
+               - Product recovery, reuse and remanufacturing
+               - Product life cycle, information and knowledge management
+               - Life cycle assessment, risk assessment
+               - Sustainable business models
+               
+            2. Sustainable Manufacturing Processes:
+               - Manufacturing processes, tools and equipment
+               - Energy and resource efficiency
+               - Resource utilization and waste reduction
+               - Maintenance, repair and overhaul for machines and equipment
+               
+            3. Sustainable Manufacturing Systems:
+               - Manufacturing system design
+               - Simulation tools for manufacturing system design/layout testing
+               - Sustainable supply chain
+               - Data usage and sustainable manufacturing/production planning
+               - Metrics for sustainable manufacturing systems
+               
+            4. Crosscutting Topics:
+               - Industry 4.0 and sustainable manufacturing
+               - Circular economy
+               - CO2 neutral production
+               - Regional integration for sustainability
+               - Sustainable energy transition / Sustainable energy development
+               - Policy design for sustainability
+               - Engineering education towards sustainable development
+               - Regional integration of sustainability in South East Asia
+        
+            Response Format:  (Strictly adhere to this format)
+        
+            - Overall Category: Category name
+            - Field of research: Field name
+            - Research methods: Methodology
+            - Scope: Score Number between 1 to 6
+            - Research Purpose: Theoretical or Applied
+            - Forecasted Presentation Time: Brief or Long
+            - Prompt token count: Number
+            - Response token count: Number
+            """)
 
     # Transforming original spreadsheet into machine-readable data frame
-    current_time = datetime.datetime.now()
-    print(f"{current_time} - Analyzing...")
+    print(f"{ct()} - Analyzing...")
     df = pd.read_excel(file_path)
-    df1 = pd.DataFrame(df, columns=["Paper ID", "Paper Title", "Abstract", "Authors"])
-
     # Preliminary data processing using original spreadsheet data
     df_results = input_from_spreadsheet(file_path, model)
+    df_r = session_assignment(df_results)
+    df_r["Session No."] = df_r["Refined Grouping"].map(lambda g: merge_groups(df_r).get(g, g))
+    df_r["Session No."] = df_r["Session No."].map({name: f"{i+1}" for i, name in enumerate(df_r["Session No."].unique())})
 
     if df_results is None:
         return
-    time.sleep(5)
-
-    # Preliminary session assignment based on preliminary data processing
-    session_no = session_assignment(df, df_results, model)
-
-    # Preparing final data in order to have them exported into the target human-readable spreadsheet
-    df_results["Session No."] = session_no
-    df_results["Paper Title"] = df1[['Paper Title']]
-    df_results["Paper ID"] = df1[['Paper ID']]
-    df_results["Authors"] = df1[['Authors']]
 
     # Write results to spreadsheet
-    write_to_excel(df_results, file_path)
+    write_to_excel(df_r, file_path)
     return

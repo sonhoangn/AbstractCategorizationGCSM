@@ -1,16 +1,18 @@
 import datetime
-import google.generativeai as genai
-import pandas as pd
-import time
-from collections import defaultdict
-from IPython.display import HTML, display
-import webbrowser
 import os
+import time
+import webbrowser
+from collections import defaultdict
 from pathlib import Path
 
+import google.generativeai as genai
+import pandas as pd
+
+# Define output path and check whether output path already existed in the target directory
 RESULTS_PATH = Path(__file__).parent / "results"
 os.makedirs(RESULTS_PATH, exist_ok=True)
 
+# Define current running time
 def ct():
     return datetime.datetime.now()
 
@@ -25,7 +27,7 @@ def categorize_abstract(index, abstract, model):
     """
     # Configure generative ai response
     response = model.generate_content(prompt)
-    print(f"{ct()} - Categorization response for Abstract No. {index} provided. Analyzing...")
+    print(f"{ct()} - Response for Abstract No. {index} provided. Analyzing...")
     # Find the best fit overall category name from the response
     line1 = [line for line in response.text.split("\n") if line.startswith("- Overall Category: ")]
     if line1:
@@ -62,22 +64,20 @@ def categorize_abstract(index, abstract, model):
         forecasted_time = line6[0].split(": ")[1].strip()
     else:
         forecasted_time = "N/A"
-
     # Get token count
     prompt_tokens = str(model.count_tokens(prompt)).split(": ")[1].strip()
     response_tokens = str(model.count_tokens(response.text)).split(": ")[1].strip()
     # Return values from method
-    # print(f"{current_time} - Abstract No. {index} finishes preliminary categorization, continue with affiliation suggestion for this one.")
-    print(f"{ct()} - Abstract No. {index} finishes preliminary categorization, onto the next abstract.")
+    print(f"{ct()} - Abstract No. {index} finishes preliminary categorization...")
     return overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens
 
 # Session Assignment
 def session_assignment(df):
     # Initial Grouping based on identical Topics
     df['Grouping'] = df.groupby('Topic').ngroup() + 1
-    # Count items per Grouping
+    # Count items per Grouping, "Topic" column is selected as reference
     df["Count"] = df.groupby("Grouping")["Topic"].transform("count")
-    # Initialize a new column for refined grouping
+    # Initialize a new column for refined grouping, this temp. column will not show up in the result
     df["Refined Grouping"] = ""
     refined_groups = []
     for group, subset in df.groupby("Grouping"):
@@ -87,11 +87,12 @@ def session_assignment(df):
             # Create smaller groups, using an index-based suffix
             for i, (_, row) in enumerate(subset.iterrows()):
                 refined_groups.append(f"{group}_{i // 6 + 1}")
-
+    # Assigned refined group naming to the temp. column
     df["Refined Grouping"] = refined_groups
-
+    # Return the data frame containing the temp. refined grouping column
     return df
-# Merge smaller groups
+
+# Merge smaller groups into groups of 6 based on their identical Overall Category
 def merge_groups(df):
     # Count items per refined group
     group_counts = df.groupby("Refined Grouping").size()
@@ -131,8 +132,69 @@ def merge_groups(df):
         for g in current_merge:
             merged_groups[g] = f"Merged_{new_group_id}"
         new_group_id += 1
-
     return merged_groups
+
+# Adjust Session No.
+def adjust_session_numbers(df):
+    df["Adjusted Session No."] = df["Session No."]  # Start by copying original values
+
+    # Step 1: Identify groups with exactly 6 items
+    session_counts = df["Session No."].value_counts()
+    exact_6_sessions = session_counts[session_counts == 6].index
+    less_than_6_sessions = session_counts[session_counts < 6].index
+
+    # Step 2: Mark groups as Type A (same "Overall Category") or Type B (different "Overall Category")
+    session_types = {}
+    for session in less_than_6_sessions:
+        categories = df[df["Session No."] == session]["Overall Category"].unique()
+        session_types[session] = "A" if len(categories) == 1 else "B"
+
+        # Step 3: Merge Type A groups within the same "Overall Category"
+        merged_session_map = {}  # Stores new session numbers
+        new_session_no = int(df["Session No."].max()) + 1  # Start numbering after the highest existing Session No.
+
+        type_a_sessions = [s for s, t in session_types.items() if t == "A"]
+        grouped_a = df[df["Session No."].isin(type_a_sessions)].groupby("Overall Category")
+
+        for _, group in grouped_a:
+            session_list = group["Session No."].unique()
+            items = group.copy()
+
+            # Split into smaller groups of 6 if needed
+            for i in range(0, len(items), 6):
+                batch = items.iloc[i:i + 6]
+                merged_session_no = int(new_session_no)
+                new_session_no += 1  # Increment for the next batch
+
+                for session in batch["Session No."].unique():
+                    merged_session_map[int(session)] = merged_session_no
+
+    # Step 4: Merge Type B sessions (without considering "Overall Category")
+    type_b_sessions = [s for s, t in session_types.items() if t == "B"]
+    leftover_df = df[df["Session No."].isin(type_b_sessions)].copy()
+
+    for i in range(0, len(leftover_df), 6):
+        leftover_df.loc[leftover_df.index[i:i+6], "Adjusted Session No."] = new_session_no
+        new_session_no += 1  # Increment for the next batch
+
+    # Step 5: Apply merged session mapping
+    df["Adjusted Session No."] = df["Session No."].replace(merged_session_map)
+
+    # Step 6: Ensure exact 6-item groups remain unchanged
+    df.loc[df["Session No."].isin(exact_6_sessions), "Adjusted Session No."] = df["Session No."]
+
+    # Step 7: Assign new session numbers to any remaining unmerged groups
+    remaining_unmerged = df[df["Adjusted Session No."].isna()]
+    for i in range(0, len(remaining_unmerged), 6):
+        df.loc[remaining_unmerged.index[i:i+6], "Adjusted Session No."] = new_session_no
+        new_session_no += 1
+
+    # Step 8: Renaming "Adjusted Session No." values sequentially
+    unique_sessions = df["Adjusted Session No."].dropna().unique()
+    session_rename_map = {old: new for new, old in enumerate(sorted(unique_sessions), start=1)}
+    df["Adjusted Session No."] = df["Adjusted Session No."].map(session_rename_map)
+
+    return df
 def input_from_spreadsheet(file_path, model):
     # Create data frame from the provided spreadsheet
     df = pd.read_excel(file_path)
@@ -178,7 +240,6 @@ def input_from_spreadsheet(file_path, model):
 
 # Write results to spreadsheet
 def write_to_excel(df_results, file_path):
-    print(f"{ct()} - Writing results to the final spreadsheet")
     columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
@@ -187,6 +248,7 @@ def write_to_excel(df_results, file_path):
         df_final.to_excel(writer, sheet_name='Processed')
     print(f"{ct()} - Results are saved to {output_file}")
     browser_display(df_final)
+    return output_file
 
 def unexpected_characters(text):
     return text.replace('\u01b0', 'L')
@@ -289,10 +351,17 @@ def main(file_path, llm_selection, API_KEY):
     df_r = session_assignment(df_results)
     df_r["Session No."] = df_r["Refined Grouping"].map(lambda g: merge_groups(df_r).get(g, g))
     df_r["Session No."] = df_r["Session No."].map({name: f"{i+1}" for i, name in enumerate(df_r["Session No."].unique())})
-
     if df_results is None:
         return
 
-    # Write results to spreadsheet
-    write_to_excel(df_r, file_path)
+    # # Write results to spreadsheet
+    # file_to_analyze = pd.read_excel(write_to_excel(df_r, file_path))
+    # df1 = adjust_session_numbers(file_to_analyze)
+    # df_r["Session No."] = df1[['Adjusted Session No.']]
+    new_df_path = write_to_excel(df_r, file_path)
+    new_df = pd.read_excel(new_df_path)
+    df1 = adjust_session_numbers(new_df)
+    df_r["Session No."] = df1[['Adjusted Session No.']]
+    final_df_path = write_to_excel(df1, file_path)
+    print(f"{ct()} - Final results save to {final_df_path}")
     return

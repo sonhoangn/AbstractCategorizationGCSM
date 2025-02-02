@@ -4,6 +4,8 @@ from Main_Functions import ct
 from pathlib import Path
 import tkinter
 import threading
+import Adjust_Session_Function
+from Adjust_Session_Function import main
 
 # Import all critical TKinter elements
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
@@ -278,6 +280,10 @@ button_1.place(
     width=98.0,
     height=39.20000076293945
 )
+# Run Refine function
+def Refine():
+    Adjust_Session_Function.main()
+    print(f"\n{ct()} - Refining sessions completes...")
 
 # Info button
 button_image_info = PhotoImage(
@@ -286,10 +292,11 @@ button_info = Button(
     image=button_image_info,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
-                          "\nKindly refer to all source codes and revisions on:"
-                          "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level."),
+    command=Refine,
+    # lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
+    #                       "\nKindly refer to all source codes and revisions on:"
+    #                       "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
+    #                       "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level."),
     relief="flat"
 )
 button_info.place(

@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox
 import tkinter as tk
 import pandas as pd
 from collections import defaultdict
+import Main_Functions
 
 def adjust_session_numbers(df):
     df["Adjusted Session No."] = df["Session No."]  # Start by copying original values
@@ -77,10 +78,14 @@ def main():
         df = pd.read_excel(file_path)
         df1 = adjust_session_numbers(df)
         df["Session No."] = df1[['Adjusted Session No.']]
-        output_file = Path(__file__).parent / "results" / file_path.replace(".xlsx", "_processed.xlsx")
+        refined_df = df[['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']]
+        # Sort data frame based on "Session No." column
+        final_df = refined_df.sort_values('Session No.')
+        output_file = Path(__file__).parent / "results" / file_path.replace(".xlsx", "_refined.xlsx")
         with pd.ExcelWriter(output_file, mode='w') as writer:
-            df.to_excel(writer, sheet_name='Processed')
+            final_df.to_excel(writer, sheet_name='Processed')
         print(f"- Results are saved to {output_file}")
+        Main_Functions.browser_display(final_df)
     else:
         print("No file selected.")
         return

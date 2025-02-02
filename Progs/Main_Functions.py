@@ -234,6 +234,7 @@ def input_from_spreadsheet(file_path, model):
     df_results["Authors"] = df[['Authors']]
     df_results["Country"] = df[['Country']]
     df_results_reorg = df_results[['No.', 'Paper ID', 'Paper Title', 'Authors', 'Country', 'Overall Category', 'Topic']]
+    # Sort data frame based on "Topic" column
     df_results = df_results_reorg.sort_values('Topic')
     return df_results
 

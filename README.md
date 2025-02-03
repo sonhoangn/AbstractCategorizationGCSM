@@ -13,16 +13,16 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 ## Setup
 
 1. Clone the repository (or copy the program):  If you cloned the repository, navigate to the project directory.
-2. Install dependencies: Run the command above to install the necessary Python packages.
+2. Install dependencies: Run the command below to install all necessary Python packages.
   ```markdown
   pip install -r requirements.txt
   ```
 4. Google Cloud API Key: Obtain a Google Cloud API key with access to the Generative AI API.  You'll be prompted to enter this key when running the program.
-5. UI Assets: Ensure that the assets and pictures directories (containing the UI elements) are in the same directory as the Python program.  These are crucial for the UI to function correctly.
+5. UI Assets: Ensure that the assets folder (containing all UI elements) is in the same directory as the Python program.  These are crucial for the UI to function correctly.
    
 ## Usage
 
-1. Prepare your Excel spreadsheet: The spreadsheet should contain the following columns:
+1. Prepare your Excel spreadsheet: The spreadsheet must contain at least the following columns:
    - `Paper ID`
    - `Paper Title`
    - `Abstract`

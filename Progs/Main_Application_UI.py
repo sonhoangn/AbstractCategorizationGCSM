@@ -74,7 +74,7 @@ image_1 = canvas.create_image(
 )
 
 # Processing Time Display (entry_2)
-entry_image_2 = PhotoImage(file=relative_to_assets("entry_2.png"))
+entry_image_2 = PhotoImage(file=relative_to_assets("timedisplay.png"))
 entry_bg_2 = canvas.create_image(476.5, 355.0, image=entry_image_2)
 entry_2 = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
 entry_2.place(x=422.0, y=344.0, width=109.0, height=20.0)

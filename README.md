@@ -63,4 +63,5 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 - Be sure to have a valid Google Cloud API key with appropriate access to the Generative AI models.
 - The UI elements (images, etc.) are essential for the program to run correctly. Ensure they are placed in the correct directories as described in the setup instructions.
 - Ensure the source spreadsheet to be provided to the program need to contain the required column as aforementioned in the Usage section, else it would encounter error as soon as the "START" button is pressed.
+- In case you have any issues with the program or any questions, kindly send me an email at sonhoangn@yahoo.com
 ```

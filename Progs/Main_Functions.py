@@ -355,14 +355,13 @@ def main(file_path, llm_selection, API_KEY):
     if df_results is None:
         return
 
-    # # Write results to spreadsheet
-    # file_to_analyze = pd.read_excel(write_to_excel(df_r, file_path))
-    # df1 = adjust_session_numbers(file_to_analyze)
-    # df_r["Session No."] = df1[['Adjusted Session No.']]
+    # Write temporary results to spreadsheet
     new_df_path = write_to_excel(df_r, file_path)
     new_df = pd.read_excel(new_df_path)
+    # Refine the results and write the final results to spreadsheet
     df1 = adjust_session_numbers(new_df)
-    df_r["Session No."] = df1[['Adjusted Session No.']]
-    final_df_path = write_to_excel(df1, file_path)
+    df1["Session No."] = df1[['Adjusted Session No.']]
+    final_df = df1.sort_values('Session No.')
+    final_df_path = write_to_excel(final_df, file_path)
     print(f"{ct()} - Final results save to {final_df_path}")
     return

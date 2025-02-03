@@ -1,4 +1,3 @@
-```markdown
 # Abstract Categorization and Session Assignment Tool
 
 This Python program uses Google's Generative AI models to categorize research paper abstracts and assign them to sessions based on topic similarity and other criteria.
@@ -6,6 +5,7 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 
 ## Requirements
 
+```markdown
 - Python 3.x
 - Required Python packages: check requirements.txt in Progs for all necessary packages to be installed in order to use this program.
   ```
@@ -39,7 +39,7 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 8. Processing: After providing all necessary data, you could proceed with pressing the "START" button. The program would automatically start processing the provided list of abstracts, categorizing them and assigning sessions. The. This might take some time depending on the number of abstracts.
 9. Output:
    - A new Excel file (with "_processed" appended to the original filename) will be created in the same directory of the original spreadsheet file, containing the categorized abstracts and session assignments.
-   - An HTML file ("Sessions_schedule.html") will also be created in the "Results" folder, which will open in your default web browser for easy review of the schedule.
+   - An HTML file ("Sessions_schedule.html") will also be created in the "Results" folder located in the temporary directory in your C Drive, which will open in your default web browser for easy review of the schedule. Refer to the output messages printed on the terminal to locate the html file should you need to retrieve it.
 10. Refine function (Optional): As you click the "REFINE" button, you will be prompted to select an already processed list of abstracts (Abtracts that have been processed and assigned with session no.). Upon selecting the required list, the program will attempt to go through the provided list to merge any small sessions into sessions of 6 items each. Note that this 
 11. Other UI Interactions:
    - Terminal Box: The bottom box will display program output, including progress messages, errors, and information about actions performed.
@@ -63,5 +63,7 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 - Be sure to have a valid Google Cloud API key with appropriate access to the Generative AI models.
 - The UI elements (images, etc.) are essential for the program to run correctly. Ensure they are placed in the correct directories as described in the setup instructions.
 - Ensure the source spreadsheet to be provided to the program need to contain the required column as aforementioned in the Usage section, else it would encounter error as soon as the "START" button is pressed.
-- In case you have any issues with the program or any questions, kindly send me an email at sonhoangn@yahoo.com
+- In case you have any issues with the program or any questions, kindly send me an email at:
+```markdown
+  sonhoangn@yahoo.com
 ```

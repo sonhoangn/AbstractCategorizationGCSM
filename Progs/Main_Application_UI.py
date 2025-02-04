@@ -19,7 +19,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, fil
 # Global pathing parameters
 FILE_PATH = Path(__file__).parent
 ASSETS_PATH = FILE_PATH / "assets" / "frame0"
-ICON_PATH = ASSETS_PATH / "icon.png"
+ICON_PATH = ASSETS_PATH / "icon.ico"
 
 def instruction_message_terminal(event):
     message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
@@ -89,9 +89,9 @@ try:
     icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
 except FileNotFoundError:
-    print(f"{ct()} - Error: Icon file not found at {ICON_PATH}")
+    print(f"{ct()} - Error: Icon file not found at {ICON_PATH}\n")
 except Exception as e:
-    print(f"{ct()} - Error loading icon: {e}")
+    print(f"{ct()} - Error loading icon: {e}\n")
 
 # Info button
 button_image_1 = PhotoImage(
@@ -103,7 +103,7 @@ button_1 = Button(
     command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
                           "\nKindly refer to all source codes and revisions on:"
                           "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level."),
+                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level.\n"),
     relief="flat"
 )
 button_1.place(
@@ -116,7 +116,7 @@ button_1.place(
 # Running main Function
 def start_analysis():
     global file_path, llm_selection, API_KEY
-    print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}")
+    print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}\n")
     if not file_path:
         messagebox.showwarning("Warning", "No file selected!")
         return
@@ -126,7 +126,7 @@ def start_analysis():
     if not API_KEY:
         messagebox.showwarning("Warning", "No API Key provided!")
         return
-    print(f"{ct()} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}")
+    print(f"{ct()} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}\n")
 
     # Enable the main process to be performed in Multi-threading mode to avoid UI unresponsiveness
     def process_in_thread():
@@ -134,7 +134,7 @@ def start_analysis():
 
     thread = threading.Thread(target=process_in_thread)
     thread.start()
-    print(f"{ct()} - Started processing in a separate thread.")
+    print(f"{ct()} - Started processing in a separate thread.\n")
 
 # Start Button
 button_image_2 = PhotoImage(
@@ -156,7 +156,7 @@ button_2.place(
 # Run Refine function
 def Refine():
     Adjust_Session_Function.main()
-    print(f"\n{ct()} - Refining sessions completes...")
+    print(f"\n{ct()} - Refining sessions completes...\n")
 
 # Refine function button
 button_image_3 = PhotoImage(
@@ -208,7 +208,7 @@ def browse_ss():
     if file_path:
         entry_1.delete(0, "end")
         entry_1.insert(0, file_path)
-    print(f"{ct()} - Use data retrieved from {file_path}.")
+    print(f"{ct()} - Use data retrieved from {file_path}.\n")
     return file_path
 
 # Browse file button
@@ -259,7 +259,7 @@ def save_llm_selection():
     if not llm_selection:
         messagebox.showwarning("Warning", "No LLM selection detected!")
         return
-    print(f"{ct()} - LLM: {llm_selection}, selected!")
+    print(f"{ct()} - LLM: {llm_selection}, selected!\n")
     return llm_selection
 
 # LLM Selection button
@@ -309,7 +309,7 @@ def save_api_key():
     if not API_KEY:
         messagebox.showwarning("Warning", "No API Key detected!")
         return
-    print(f"{ct()} - API Key: {API_KEY}, provided!")
+    print(f"{ct()} - API Key: {API_KEY}, provided!\n")
     return API_KEY
 
 # Input API_Key
@@ -393,11 +393,11 @@ class StdoutRedirector(object):
 sys.stdout = StdoutRedirector(entry_5, entry_2)
 
 # Welcome Message
-print(f"""{ct()} - Hello there, please kindly provide all required data before pressing the START button\n
-    - Press the button on the right of each text box to save the provided info.\n
-    - Required info include: API_KEY, LLM, and path to the original spreadsheet file.\n
-    - START button will begin the preliminary session assignment routine.\n
-    - REFINE button will help to merge the remaining smaller sessions.""")
+print(f"{ct()} - Hello there, please kindly provide all required data before pressing the START button"
+    "\n- Press the button on the right of each text box to save the provided info."
+    "\n- Required info include: API_KEY, LLM, and path to the original spreadsheet file."
+    "\n- START button will begin the preliminary session assignment routine."
+    "\n- REFINE button will help to merge the remaining smaller sessions.\n")
 
 window.resizable(False, False)
 window.mainloop()

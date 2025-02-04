@@ -77,7 +77,12 @@ image_1 = canvas.create_image(
 entry_image_2 = PhotoImage(file=relative_to_assets("timedisplay.png"))
 entry_bg_2 = canvas.create_image(476.5, 355.0, image=entry_image_2)
 entry_2 = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-entry_2.place(x=422.0, y=344.0, width=109.0, height=20.0)
+entry_2.place(
+    x=429.0,
+    y=344.0,
+    width=95.0,
+    height=20.0
+)
 
 # Set the window icon (cross-platform)
 try:
@@ -334,8 +339,8 @@ entry_bg_2 = canvas.create_image(
 )
 entry_2 = Entry(
     bd=0,
-    bg="#FFFFFF",
-    fg="#000716",
+    bg="#000000",
+    fg="#70e4f8",
     highlightthickness=0
 )
 entry_2.place(
@@ -356,7 +361,7 @@ entry_bg_5 = canvas.create_image(
 entry_5 = Text(
     bd=0,
     bg="#000000",
-    fg="#000716",
+    fg="#70e4f8",
     highlightthickness=0
 )
 entry_5.place(

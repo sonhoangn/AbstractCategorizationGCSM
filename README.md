@@ -40,7 +40,7 @@ It reads abstract data from an Excel spreadsheet, processes it using the Generat
 9. Output:
    - A new Excel file (with "_processed" appended to the original filename) will be created in the same directory of the original spreadsheet file, containing the categorized abstracts and session assignments.
    - An HTML file ("Sessions_schedule.html") will also be created in the "Results" folder located in the temporary directory in your C Drive, which will open in your default web browser for easy review of the schedule. Refer to the output messages printed on the terminal to locate the html file should you need to retrieve it.
-10. Refine function (Optional): As you click the "REFINE" button, you will be prompted to select an already processed list of abstracts (Abtracts that have been processed and assigned with session no.). Upon selecting the required list, the program will attempt to go through the provided list to merge any small sessions into sessions of 6 items each. Note that this 
+10. Refine function (Optional): As you click the "REFINE" button, you will be prompted to select an already processed list of abstracts (Abstracts that have been processed and assigned with session no.). Upon selecting the required list, the program will attempt to go through the provided list to merge any small sessions into sessions of 6 items each.
 11. Other UI Interactions:
    - Terminal Box: The bottom box will display program output, including progress messages, errors, and information about actions performed.
    - Processing Duration (s): This little information box will display the total time (in seconds) taken to complete the entire abstracts processing routine.

@@ -19,33 +19,88 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, fil
 # Global pathing parameters
 FILE_PATH = Path(__file__).parent
 ASSETS_PATH = FILE_PATH / "assets" / "frame0"
-ICON_PATH = ASSETS_PATH / "icon.ico"
+ICON_PATH = ASSETS_PATH / "icon.png"
 
 def instruction_message_terminal(event):
     message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
     message_label.place(x=200, y=398) # Positioning
-    message_label.after(500, message_label.destroy) # Display duration
+    # Define entering and leaving object area
+    def on_enter(event):
+        message_label.after(20000, message_label.destroy)
+    def on_leave(event):
+        message_label.destroy()
+    window.bind("<Enter>", on_enter, add=True)
+    window.bind("<Leave>", on_leave, add=True)
+    message_label.my_id = window.bind("<Leave>", lambda event: message_label.destroy(), add=True)
+    message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_input(event):
     message_label = tkinter.Label(window, text="Please kindly provide the original spreadsheet (.xls, .xlsx) \ncontaining the list of research papers with their associated abstracts.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=286) # Positioning
-    message_label.after(500, message_label.destroy) # Display duration
+    # Define entering and leaving object area
+    def on_enter(event):
+        message_label.after(20000, message_label.destroy)
+    def on_leave(event):
+        message_label.destroy()
+    window.bind("<Enter>", on_enter, add=True)
+    window.bind("<Leave>", on_leave, add=True)
+    message_label.my_id = window.bind("<Leave>", lambda event: message_label.destroy(), add=True)
+    message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_llm_selection(event):
     message_label = tkinter.Label(window, text="Please kindly choose the desired LLM from Google. \nFor example, gemini-1.5-flash or gemini-1.0-pro...", bg="lightblue", fg="blue")
     message_label.place(x=429, y=209) # Positioning
-    message_label.after(500, message_label.destroy) # Display duration
+    # Define entering and leaving object area
+    def on_enter(event):
+        message_label.after(20000, message_label.destroy)
+    def on_leave(event):
+        message_label.destroy()
+    window.bind("<Enter>", on_enter, add=True)
+    window.bind("<Leave>", on_leave, add=True)
+    message_label.my_id = window.bind("<Leave>", lambda event: message_label.destroy(), add=True)
+    message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_api_input(event):
     message_label = tkinter.Label(window, text="Please kindly provide your Google API key.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=133) # Positioning
-    message_label.after(500, message_label.destroy) # Display duration
+    # Define entering and leaving object area
+    def on_enter(event):
+        message_label.after(20000, message_label.destroy)
+    def on_leave(event):
+        message_label.destroy()
+    window.bind("<Enter>", on_enter, add=True)
+    window.bind("<Leave>", on_leave, add=True)
+    message_label.my_id = window.bind("<Leave>", lambda event: message_label.destroy(), add=True)
+    message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 def ct():
     return datetime.datetime.now()
+
+# Language Toggle
+class ImageButton(tkinter.Button):
+    def __init__(self, master, image_paths, **kwargs):  # Take a list of image paths
+        self.images = [PhotoImage(file=path) for path in image_paths]
+        super().__init__(master, image=self.images[0], **kwargs)
+        self.config(compound="center")
+        self.current_image = 0
+
+    def switch_image(self):
+        self.current_image = (self.current_image + 1) % len(self.images) # Cycle through images
+        self.config(image=self.images[self.current_image])
+        self.image = self.images[self.current_image]
+
+# Background Toggle
+def switch_background():
+    global image_image_1
+    images = [image_image_1_EN, image_image_1_DE, image_image_1_VI]
+    current_index = images.index(image_image_1)
+    next_index = (current_index + 1) % len(images)
+    image_image_1 = images[next_index]
+    canvas.itemconfig(image_1, image=image_image_1)
+    canvas.image = image_image_1 # Keep reference
 
 window = Tk()
 window.title("Automated Conference Decision-Making Systems: Distributing accepted papers into sessions")
@@ -65,12 +120,47 @@ canvas = Canvas(
 )
 
 canvas.place(x = 0, y = 0)
-image_image_1 = PhotoImage(
-    file=relative_to_assets("bg.png"))
+# Initialize background images
+image_image_1_EN = PhotoImage(file=relative_to_assets("bg.png"))
+image_image_1_DE = PhotoImage(file=relative_to_assets("bg_DE.png"))
+image_image_1_VI = PhotoImage(file=relative_to_assets("bg_VI.png"))
+image_image_1 = image_image_1_EN # Start with English version
 image_1 = canvas.create_image(
     487.0,
     325.0,
     image=image_image_1
+)
+canvas.image = image_image_1 # Keep reference
+
+# Initialize button images
+button_image_2_EN = PhotoImage(file=relative_to_assets("start.png"))
+button_image_2_DE = PhotoImage(file=relative_to_assets("start_DE.png"))
+button_image_2_VI = PhotoImage(file=relative_to_assets("start_VI.png"))
+button_image_3_EN = PhotoImage(file=relative_to_assets("refine.png"))
+button_image_3_DE = PhotoImage(file=relative_to_assets("refine_DE.png"))
+button_image_3_VI = PhotoImage(file=relative_to_assets("refine_VI.png"))
+button_image_1_EN = PhotoImage(file=relative_to_assets("EN.png"))
+button_image_1_DE = PhotoImage(file=relative_to_assets("DE.png"))
+button_image_1_VI = PhotoImage(file=relative_to_assets("VI.png"))
+
+# Info button
+button_image_7 = PhotoImage(
+    file=relative_to_assets("info.png"))
+button_7 = Button(
+    image=button_image_7,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
+                          "\nKindly refer to all source codes and revisions on:"
+                          "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
+                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level.\n"),
+    relief="flat"
+)
+button_7.place(
+    x=909.0,
+    y=331.0,
+    width=40.0,
+    height=40.0
 )
 
 # Processing Time Display (entry_2)
@@ -92,26 +182,6 @@ except FileNotFoundError:
     print(f"{ct()} - Error: Icon file not found at {ICON_PATH}\n")
 except Exception as e:
     print(f"{ct()} - Error loading icon: {e}\n")
-
-# Info button
-button_image_1 = PhotoImage(
-    file=relative_to_assets("info.png"))
-button_1 = Button(
-    image=button_image_1,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
-                          "\nKindly refer to all source codes and revisions on:"
-                          "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level.\n"),
-    relief="flat"
-)
-button_1.place(
-    x=909.0,
-    y=331.0,
-    width=40.0,
-    height=40.0
-)
 
 # Running main Function
 def start_analysis():
@@ -137,43 +207,19 @@ def start_analysis():
     print(f"{ct()} - Started processing in a separate thread.\n")
 
 # Start Button
-button_image_2 = PhotoImage(
-    file=relative_to_assets("start.png"))
-button_2 = Button(
-    image=button_image_2,
-    borderwidth=0,
-    highlightthickness=0,
-    command=start_analysis,
-    relief="flat"
-)
-button_2.place(
-    x=575.0,
-    y=335.0,
-    width=112.99999237060547,
-    height=39.20000076293945
-)
+button_2 = ImageButton(window, [relative_to_assets("start.png"), relative_to_assets("start_DE.png"), relative_to_assets("start_VI.png")])
+button_2.place(x=575.0, y=335.0, width=112.99999237060547, height=39.20000076293945)
+button_2.config(command=start_analysis, relief="flat")
 
 # Run Refine function
 def Refine():
     Adjust_Session_Function.main()
     print(f"\n{ct()} - Refining sessions completes...\n")
 
-# Refine function button
-button_image_3 = PhotoImage(
-    file=relative_to_assets("refine.png"))
-button_3 = Button(
-    image=button_image_3,
-    borderwidth=0,
-    highlightthickness=0,
-    command=Refine,
-    relief="flat"
-)
-button_3.place(
-    x=746.0,
-    y=335.0,
-    width=116.99999237060547,
-    height=39.20000076293945
-)
+# Refine Button
+button_3 = ImageButton(window, [relative_to_assets("refine.png"), relative_to_assets("refine_DE.png"), relative_to_assets("refine_VI.png")])
+button_3.place(x=746.0, y=335.0, width=126.99999237060547, height=39.20000076293945)
+button_3.config(command=Refine, relief="flat")
 
 # Input Spreadsheet
 entry_image_1 = PhotoImage(
@@ -213,7 +259,7 @@ def browse_ss():
 
 # Browse file button
 button_image_4 = PhotoImage(
-    file=relative_to_assets("check.png"))
+    file=relative_to_assets("browse.png"))
 button_4 = Button(
     image=button_image_4,
     borderwidth=0,
@@ -329,6 +375,16 @@ button_6.place(
     height=40.0
 )
 
+# Language Toggle Button
+button_1 = ImageButton(window, [relative_to_assets("EN.png"), relative_to_assets("DE.png"), relative_to_assets("VI.png")])
+button_1.place(x=909.0, y=7.999999999999986, width=40.0, height=40.0)
+button_1.config(command=lambda: [
+    button_1.switch_image(),
+    button_2.switch_image(),
+    button_3.switch_image(),
+    switch_background()
+], relief="flat")
+
 # Processing Time Display
 entry_image_2 = PhotoImage(
     file=relative_to_assets("timedisplay.png"))
@@ -397,7 +453,7 @@ print(f"{ct()} - Hello there, please kindly provide all required data before pre
     "\n- Press the button on the right of each text box to save the provided info."
     "\n- Required info include: API_KEY, LLM, and path to the original spreadsheet file."
     "\n- START button will begin the preliminary session assignment routine."
-    "\n- REFINE button will help to merge the remaining smaller sessions.\n")
+    "\n- REFINE button will help to merge the remaining smaller sessions. The results might not always be accurate depending on how many abstracts share the same topic or overall category.\n")
 
 window.resizable(False, False)
 window.mainloop()

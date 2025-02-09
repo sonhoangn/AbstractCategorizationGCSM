@@ -240,11 +240,11 @@ def input_from_spreadsheet(file_path, model):
 
 
 # Write results to spreadsheet
-def write_to_excel(df_results, file_path):
+def write_to_excel(df_results, file_path, llm):
     columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
-    output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
+    output_file = RESULTS_PATH / file_path.replace(".xlsx", f"_processed_{llm}.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
     print(f"{ct()} - Results are saved to {output_file}\n")
@@ -252,26 +252,26 @@ def write_to_excel(df_results, file_path):
     return output_file
 
 # Write results to spreadsheet and display
-def write_to_excel_display(df_results, file_path):
+def write_to_excel_display(df_results, file_path, llm):
     columns_to_save = ['Paper ID', 'Session No.', 'Paper Title', 'Overall Category', 'Topic', 'Authors', 'Country']
     df_final = df_results[columns_to_save]
     # Save data frame results to a new spreadsheet
-    output_file = RESULTS_PATH / file_path.replace(".xlsx", "_processed.xlsx")
+    output_file = RESULTS_PATH / file_path.replace(".xlsx", f"_processed_{llm}.xlsx")
     with pd.ExcelWriter(output_file, mode='w') as writer:
         df_final.to_excel(writer, sheet_name='Processed')
     print(f"{ct()} - Results are saved to {output_file}\n")
-    browser_display(df_final)
+    browser_display(df_final, llm)
     return output_file
 
 def unexpected_characters(text):
     return text.replace('\u01b0', 'L')
 
 # Display results via browser
-def browser_display(df_final):
+def browser_display(df_final, llm):
     print(f"{ct()} - Converting result spreadsheet to readable html format.\n")
     html_table = unexpected_characters(df_final).to_html(index=False)
 
-    output_path = RESULTS_PATH / "Sessions_schedule.html"
+    output_path = RESULTS_PATH / f"Sessions_schedule_{llm}.html"
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_table)
@@ -368,12 +368,12 @@ def main(file_path, llm_selection, API_KEY):
         return
 
     # Write temporary results to spreadsheet
-    new_df_path = write_to_excel(df_r, file_path)
+    new_df_path = write_to_excel(df_r, file_path, llm_selection)
     new_df = pd.read_excel(new_df_path)
     # Refine the results and write the final results to spreadsheet
     df1 = adjust_session_numbers(new_df)
     df1["Session No."] = df1[['Adjusted Session No.']]
     final_df = df1.sort_values('Session No.')
-    final_df_path = write_to_excel_display(final_df, file_path)
+    final_df_path = write_to_excel_display(final_df, file_path, llm_selection)
     print(f"{ct()} - Final results save to {final_df_path}\n")
     return

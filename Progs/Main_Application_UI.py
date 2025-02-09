@@ -1,10 +1,6 @@
-from pathlib import Path
-import tkinter
-import sys
 import datetime
 import sys
 import re
-from re import match
 
 import Main_Functions
 from Main_Functions import ct

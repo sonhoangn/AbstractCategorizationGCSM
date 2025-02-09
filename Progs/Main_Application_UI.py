@@ -48,7 +48,7 @@ def instruction_message_input(event):
     message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_llm_selection(event):
-    message_label = tkinter.Label(window, text="Please kindly choose the desired LLM from Google. \nFor example, gemini-1.5-flash or gemini-1.0-pro...", bg="lightblue", fg="blue")
+    message_label = tkinter.Label(window, text="Please kindly choose the desired Gemini model offered by Google. \nFor example: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, etc. \nImportant: gemini-1.5-pro can only accommodate up to 50 requests per day per API key, \n and is only suitable for a small data set.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=209) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -77,7 +77,8 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 def ct():
-    return datetime.datetime.now()
+    crtm = datetime.datetime.now()
+    return crtm.strftime("%Y-%m-%d %H:%M:%S")
 
 # Language Toggle
 class ImageButton(tkinter.Button):
@@ -153,7 +154,7 @@ button_7 = Button(
     command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
                           "\nKindly refer to all source codes and revisions on:"
                           "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages Google AI models using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with putting them into sessions based on their similarity level.\n"),
+                          "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"),
     relief="flat"
 )
 button_7.place(

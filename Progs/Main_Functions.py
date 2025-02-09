@@ -14,7 +14,8 @@ os.makedirs(RESULTS_PATH, exist_ok=True)
 
 # Define current running time
 def ct():
-    return datetime.datetime.now()
+    crtm = datetime.datetime.now()
+    return crtm.strftime("%Y-%m-%d %H:%M:%S")
 
 # Define method to categorize abstract
 def categorize_abstract(index, abstract, model):
@@ -195,7 +196,7 @@ def adjust_session_numbers(df):
     df["Adjusted Session No."] = df["Adjusted Session No."].map(session_rename_map)
 
     return df
-def input_from_spreadsheet(file_path, model):
+def input_from_spreadsheet(file_path, model, llm_selection):
     # Create data frame from the provided spreadsheet
     df = pd.read_excel(file_path)
     # Record start time
@@ -214,13 +215,19 @@ def input_from_spreadsheet(file_path, model):
         try:
             overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens = categorize_abstract(
                 index, abstract, model)
-            time.sleep(6)
+            if llm_selection == "gemini-1.5-pro":
+                time.sleep(20)
+            else:
+                time.sleep(6)
             results.append((index, abstract, overall_category, research_field, research_method, scope, purpose, forecasted_time, prompt_tokens, response_tokens))
             # Print progress message every 10 abstracts
             if (index + 1) % 10 == 0:
                 print(f"{ct()} - No. of abstracts processed: {index + 1}\n")
             # Include a delay between prompt request
-            time.sleep(6)
+            if llm_selection == "gemini-1.5-pro":
+                time.sleep(20)
+            else:
+                time.sleep(6)
         # Define exception
         except Exception as e:
             print(f"{ct()} - Error processing abstract {index + 1}: {e}\n")
@@ -360,7 +367,7 @@ def main(file_path, llm_selection, API_KEY):
     print(f"{ct()} - Analyzing...\n")
     df = pd.read_excel(file_path)
     # Preliminary data processing using original spreadsheet data
-    df_results = input_from_spreadsheet(file_path, model)
+    df_results = input_from_spreadsheet(file_path, model, llm_selection)
     df_r = session_assignment(df_results)
     df_r["Session No."] = df_r["Refined Grouping"].map(lambda g: merge_groups(df_r).get(g, g))
     df_r["Session No."] = df_r["Session No."].map({name: f"{i+1}" for i, name in enumerate(df_r["Session No."].unique())})

@@ -171,7 +171,7 @@ entry_2.place(
     height=20.0
 )
 
-# Set the window icon (cross-platform)
+# Set window icon
 try:
     icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
@@ -180,7 +180,7 @@ except FileNotFoundError:
 except Exception as e:
     print(f"{ct()} - Error loading icon: {e}\n")
 
-# Running main Function
+# Running Main_Functions
 def start_analysis():
     global file_path, llm_selection, API_KEY
     print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}\n")

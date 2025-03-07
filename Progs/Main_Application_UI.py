@@ -99,8 +99,19 @@ def switch_background():
     canvas.itemconfig(image_1, image=image_image_1)
     canvas.image = image_image_1 # Keep reference
 
+# Title Toggle
+def switch_title():
+    global current_title_index
+    current_title_index = (current_title_index + 1) % len(titles)
+    window.title(titles[current_title_index])
+
+titles = ["Automated Conference Decision-Making Systems: Distributing accepted papers into sessions",
+          "Automatische Konferenzplanung: Zuordnung akzeptierter Beiträge zu Sitzungen",
+          "Hệ thống lên lịch Hội Thảo: Sắp xếp chương trình cho các bài nghiên cứu được chấp thuận"]
+current_title_index = 0
+
 window = Tk()
-window.title("Automated Conference Decision-Making Systems: Distributing accepted papers into sessions")
+window.title(titles[current_title_index])
 
 window.geometry("975x650")
 window.configure(bg = "#9fd0f5")
@@ -409,7 +420,8 @@ button_1.config(command=lambda: [
     button_1.switch_image(),
     button_2.switch_image(),
     button_3.switch_image(),
-    switch_background()
+    switch_background(),
+    switch_title()
 ], relief="flat")
 
 # Processing Time Display

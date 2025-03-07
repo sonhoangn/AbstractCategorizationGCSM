@@ -1,13 +1,13 @@
-import datetime
 import sys
 import re
-
+import datetime
 import Main_Functions
 from Main_Functions import ct
 from pathlib import Path
 import tkinter
 import threading
 import Adjust_Session_Function
+# import Configurable_Parameters_UI
 
 # Import all critical TKinter elements
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
@@ -140,11 +140,39 @@ button_image_1_EN = PhotoImage(file=relative_to_assets("EN.png"))
 button_image_1_DE = PhotoImage(file=relative_to_assets("DE.png"))
 button_image_1_VI = PhotoImage(file=relative_to_assets("VI.png"))
 
-# Info button
+# Toggle settings
+# def settings():
+#     print(f"\n{ct()} - Configuration windows has been opened..")
+#     # global ASSETS_PATH
+#     # path1 = ASSETS_PATH
+#     # print(f"{path1}")
+#     # global ICON_PATH
+#     # path2 = ICON_PATH
+#     # print(f"{path2}")
+#     Configurable_Parameters_UI.main()
+
+# Settings button
 button_image_7 = PhotoImage(
-    file=relative_to_assets("info.png"))
+    file=relative_to_assets("settings.png"))
 button_7 = Button(
     image=button_image_7,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: print(f"{ct()} - Configurable parameters windows is being worked on. Nothing can be accessed for now.."),
+    relief="flat"
+)
+button_7.place(
+    x=909.0,
+    y=331.0,
+    width=40.0,
+    height=40.0
+)
+
+# Info button
+button_image_8 = PhotoImage(
+    file=relative_to_assets("info_s.png"))
+button_8 = Button(
+    image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
     command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
@@ -153,11 +181,11 @@ button_7 = Button(
                           "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"),
     relief="flat"
 )
-button_7.place(
-    x=909.0,
-    y=331.0,
-    width=40.0,
-    height=40.0
+button_8.place(
+    x=957.0,
+    y=59.0,
+    width=15.0,
+    height=15.0
 )
 
 # Processing Time Display (entry_2)
@@ -352,7 +380,9 @@ def save_api_key():
     if not API_KEY:
         messagebox.showwarning("Warning", "No API Key detected!")
         return
-    print(f"{ct()} - API Key: {API_KEY}, provided!\n")
+    entry_4.delete(0, "end")
+    entry_4.insert(0, "**************")
+    print(f"{ct()} - API Key provided!\n")
     return API_KEY
 
 # Input API_Key

@@ -139,18 +139,18 @@ def merge_groups(df):
 def adjust_session_numbers(df):
     df["Adjusted Session No."] = df["Session No."]  # Start by copying original values
 
-    # Step 1: Identify groups with exactly 6 items
+    # Identify groups with exactly 6 items
     session_counts = df["Session No."].value_counts()
     exact_6_sessions = session_counts[session_counts == 6].index
     less_than_6_sessions = session_counts[session_counts < 6].index
 
-    # Step 2: Mark groups as Type A (same "Overall Category") or Type B (different "Overall Category")
+    # Mark groups as Type A (same "Overall Category") or Type B (different "Overall Category")
     session_types = {}
     for session in less_than_6_sessions:
         categories = df[df["Session No."] == session]["Overall Category"].unique()
         session_types[session] = "A" if len(categories) == 1 else "B"
 
-        # Step 3: Merge Type A groups within the same "Overall Category"
+        # Merge Type A groups within the same "Overall Category"
         merged_session_map = {}  # Stores new session numbers
         new_session_no = int(df["Session No."].max()) + 1  # Start numbering after the highest existing Session No.
 
@@ -170,7 +170,7 @@ def adjust_session_numbers(df):
                 for session in batch["Session No."].unique():
                     merged_session_map[int(session)] = merged_session_no
 
-    # Step 4: Merge Type B sessions (without considering "Overall Category")
+    # Merge Type B sessions (without considering "Overall Category")
     type_b_sessions = [s for s, t in session_types.items() if t == "B"]
     leftover_df = df[df["Session No."].isin(type_b_sessions)].copy()
 
@@ -178,19 +178,19 @@ def adjust_session_numbers(df):
         leftover_df.loc[leftover_df.index[i:i+6], "Adjusted Session No."] = new_session_no
         new_session_no += 1  # Increment for the next batch
 
-    # Step 5: Apply merged session mapping
+    # Apply merged session mapping
     df["Adjusted Session No."] = df["Session No."].replace(merged_session_map)
 
-    # Step 6: Ensure exact 6-item groups remain unchanged
+    # Ensure exact 6-item groups remain unchanged
     df.loc[df["Session No."].isin(exact_6_sessions), "Adjusted Session No."] = df["Session No."]
 
-    # Step 7: Assign new session numbers to any remaining unmerged groups
+    # Assign new session numbers to any remaining unmerged groups
     remaining_unmerged = df[df["Adjusted Session No."].isna()]
     for i in range(0, len(remaining_unmerged), 6):
         df.loc[remaining_unmerged.index[i:i+6], "Adjusted Session No."] = new_session_no
         new_session_no += 1
 
-    # Step 8: Renaming "Adjusted Session No." values sequentially
+    # Renaming "Adjusted Session No." values sequentially
     unique_sessions = df["Adjusted Session No."].dropna().unique()
     session_rename_map = {old: new for new, old in enumerate(sorted(unique_sessions), start=1)}
     df["Adjusted Session No."] = df["Adjusted Session No."].map(session_rename_map)

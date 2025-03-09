@@ -18,7 +18,13 @@ ASSETS_PATH = FILE_PATH / "assets" / "frame0"
 ICON_PATH = ASSETS_PATH / "icon.png"
 
 def instruction_message_terminal(event):
-    message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
+    global wdlg
+    if wdlg == "EN":
+        message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
+    elif wdlg == "DE":
+        message_label = tkinter.Label(window, text="Das Terminal zeigt jede vom Programm ausgeführte Aktion sowie alle aufgetretenen Fehler an!", bg="lightblue", fg="blue")
+    elif wdlg == "VN":
+        message_label = tkinter.Label(window, text="Toàn bộ tương tác và lỗi đều sẽ được hiển thị trên màn hình này!", bg="lightblue", fg="blue")
     message_label.place(x=200, y=398) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -31,7 +37,13 @@ def instruction_message_terminal(event):
     message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_input(event):
-    message_label = tkinter.Label(window, text="Please kindly provide the original spreadsheet (.xls, .xlsx) \ncontaining the list of research papers with their associated abstracts.", bg="lightblue", fg="blue")
+    global wdlg
+    if wdlg == "EN":
+        message_label = tkinter.Label(window, text="Please kindly provide the original spreadsheet (.xls, .xlsx) \ncontaining the list of research papers with their associated abstracts.", bg="lightblue", fg="blue")
+    elif wdlg == "DE":
+        message_label = tkinter.Label(window, text="Bitte stellen Sie die Originaltabelle (.xls, .xlsx) mit der Liste \nder Forschungsarbeiten und den dazugehörigen Abstracts zur Verfügung.", bg="lightblue", fg="blue")
+    elif wdlg == "VN":
+        message_label = tkinter.Label(window, text="Vui lòng cung cấp bảng dữ liệu gốc (.xls, .xlsx) \ncó chứa danh sách các bài nghiên cứu cùng những bản tóm tắt có liên quan.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=286) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -44,7 +56,13 @@ def instruction_message_input(event):
     message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_llm_selection(event):
-    message_label = tkinter.Label(window, text="Please kindly choose the desired Gemini model offered by Google. \nFor example: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, etc. \nImportant: gemini-1.5-pro can only accommodate up to 50 requests per day per API key, \n and is only suitable for a small data set.", bg="lightblue", fg="blue")
+    global wdlg
+    if wdlg == "EN":
+        message_label = tkinter.Label(window, text="Please kindly choose the desired Gemini model offered by Google. \nFor example: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, etc. \nImportant: gemini-1.5-pro can only accommodate up to 50 requests per day per API key, \n and is only suitable for a small data set.", bg="lightblue", fg="blue")
+    elif wdlg == "DE":
+        message_label = tkinter.Label(window, text="Bitte wählen Sie das gewünschte LLM. \nBeispiel: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash usw. \nWichtig: gemini-1.5-pro kann nur bis zu 50 Anfragen pro Tag und API-Schlüssel verarbeiten \n und ist nur für kleine Datensätze geeignet.", bg="lightblue", fg="blue")
+    elif wdlg == "VN":
+        message_label = tkinter.Label(window, text="Vui lòng chọn LLM từ danh sách xổ xuống. \nVí dụ: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, v.v. \nQuan trọng: gemini-1.5-pro chỉ có thể xử lý tối đa 50 yêu cầu mỗi ngày cho mỗi API key, \nvà chỉ phù hợp với bộ dữ liệu nhỏ.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=209) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -57,7 +75,13 @@ def instruction_message_llm_selection(event):
     message_label.my_id_enter = window.bind("<Enter>", lambda event: None, add=True)
 
 def instruction_message_api_input(event):
-    message_label = tkinter.Label(window, text="Please kindly provide your Google API key.", bg="lightblue", fg="blue")
+    global wdlg
+    if wdlg == "EN":
+        message_label = tkinter.Label(window, text="Please kindly provide your Google API key.", bg="lightblue", fg="blue")
+    elif wdlg == "DE":
+        message_label = tkinter.Label(window, text="Bitte geben Sie Ihren Google API-Schlüssel an.", bg="lightblue", fg="blue")
+    elif wdlg == "VN":
+        message_label = tkinter.Label(window, text="Vui lòng cung cấp Gemini API key của bạn tại đây.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=133) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -102,17 +126,22 @@ def switch_background():
 # Title Toggle
 def switch_title():
     global current_title_index
+    global wdlg
     current_title_index = (current_title_index + 1) % len(titles)
     window.title(titles[current_title_index])
+    wdlg = lg[current_title_index]
 
 titles = ["Automated Conference Decision-Making Systems: Distributing accepted papers into sessions",
           "Automatische Konferenzplanung: Zuordnung akzeptierter Beiträge zu Sitzungen",
           "Hệ thống lên lịch Hội Thảo: Sắp xếp chương trình cho các bài nghiên cứu được chấp thuận"]
+
+lg = ["EN", "DE", "VN"]
+
 current_title_index = 0
 
 window = Tk()
 window.title(titles[current_title_index])
-
+wdlg = "EN"
 window.geometry("975x650")
 window.configure(bg = "#9fd0f5")
 
@@ -179,6 +208,25 @@ button_7.place(
     height=40.0
 )
 
+def info_display():
+    global wdlg
+    if wdlg == "EN":
+        print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
+              "\nKindly refer to all source codes and revisions on:"
+              "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
+              "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"),
+    elif wdlg == "DE":
+        print(f"{ct()} - Erstellt von Nguyen, Son Hoang und Le, Thi Dieu Ly."
+              "\nBitte beachten Sie alle Quellcodes und Revisionen auf:"
+              "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
+              "\nVerwendung: Dieses Programm nutzt verschiedene Gemini-Modelle von Google unter Verwendung des von Google bereitgestellten API-Schlüssels, um einen großen Datensatz von Abstracts aus verschiedenen Forschungsarbeiten zu analysieren und sie so anhand ihres Ähnlichkeitsgrades in Sitzungen zu gruppieren.\n"),
+
+    elif wdlg == "VN":
+        print(f"{ct()} - Được viết bởi Nguyễn Sơn Hoàng và Lê Thị Diệu Ly."
+              "\nVui lòng tham khảo tất cả các mã nguồn và bản sửa đổi trên:"
+              "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
+              "\nSử dụng: Chương trình này tận dụng các mô hình Gemini khác nhau từ Google bằng cách sử dụng khóa API do Google cung cấp để giúp phân tích những bộ dữ liệu lớn gồm các bản tóm tắt từ nhiều bài báo nghiên cứu khác nhau, từ đó giúp phân loại chúng thành nhiều nhóm dựa trên mức độ tương đồng về mặt nội dung của chúng.\n"),
+
 # Info button
 button_image_8 = PhotoImage(
     file=relative_to_assets("info_s.png"))
@@ -186,10 +234,7 @@ button_8 = Button(
     image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
-                          "\nKindly refer to all source codes and revisions on:"
-                          "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-                          "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"),
+    command=info_display,
     relief="flat"
 )
 button_8.place(
@@ -215,14 +260,29 @@ try:
     icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
 except FileNotFoundError:
-    print(f"{ct()} - Error: Icon file not found at {ICON_PATH}\n")
+    if wdlg == "EN":
+        print(f"{ct()} - Error: Icon file not found at {ICON_PATH}\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Fehler: Symboldatei nicht gefunden unter {ICON_PATH}\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Lỗi: Không tìm thấy tệp biểu tượng tại {ICON_PATH}\n")
 except Exception as e:
-    print(f"{ct()} - Error loading icon: {e}\n")
+    if wdlg == "EN":
+        print(f"{ct()} - Error loading icon: {e}\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Fehler beim Laden des Symbols: {e}\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Lỗi khi tải biểu tượng: {e}\n")
 
 # Running Main_Functions
 def start_analysis():
-    global file_path, llm_selection, API_KEY
-    print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}\n")
+    global file_path, llm_selection, API_KEY, wdlg
+    if wdlg == "EN":
+        print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Verwendete Daten: {file_path}, mit LLM: {llm_selection} und API-Schlüssel: {API_KEY}\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Dữ liệu đang sử dụng: {file_path}, với LLM: {llm_selection} và API Key: {API_KEY}\n")
     if not file_path:
         messagebox.showwarning("Warning", "No file selected!")
         return
@@ -232,15 +292,26 @@ def start_analysis():
     if not API_KEY:
         messagebox.showwarning("Warning", "No API Key provided!")
         return
-    print(f"{ct()} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}\n")
+    if wdlg == "EN":
+        print(f"{ct()} - Start analyzing with file: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Analyse gestartet mit Datei: {file_path}, LLM: {llm_selection}, API-Schlüssel: {API_KEY}\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Bộ dữ liệu sẽ được phân tích: {file_path}, LLM: {llm_selection}, API Key: {API_KEY}\n")
 
     # Enable the main process to be performed in Multi-threading mode to avoid UI unresponsiveness
     def process_in_thread():
-        Main_Functions.main(file_path, llm_selection, API_KEY)
+        Main_Functions.main(file_path, llm_selection, API_KEY, wdlg)
 
     thread = threading.Thread(target=process_in_thread)
     thread.start()
-    print(f"{ct()} - Started processing in a separate thread.\n")
+
+    if wdlg == "EN":
+        print(f"{ct()} - Started processing in a separate thread.\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Die Verarbeitung wurde in einem separaten Thread gestartet.\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Tác vụ đã được bắt đầu trên một luồng (thread) riêng.\n")
 
 # Start Button
 button_2 = ImageButton(window, [relative_to_assets("start.png"), relative_to_assets("start_DE.png"), relative_to_assets("start_VI.png")])
@@ -250,7 +321,13 @@ button_2.config(command=start_analysis, relief="flat")
 # Run Refine function
 def Refine():
     Adjust_Session_Function.main()
-    print(f"\n{ct()} - Refining sessions completes...\n")
+    if wdlg == "EN":
+        print(f"\n{ct()} - Refining sessions completes...\n")
+    elif wdlg == "DE":
+        print(f"\n{ct()} - Die Verfeinerung ist fertig …\n")
+    elif wdlg == "VN":
+        print(f"\n{ct()} - Tinh chỉnh hoàn tất...\n")
+
 
 # Refine Button
 button_3 = ImageButton(window, [relative_to_assets("refine.png"), relative_to_assets("refine_DE.png"), relative_to_assets("refine_VI.png")])
@@ -290,7 +367,13 @@ def browse_ss():
     if file_path:
         entry_1.delete(0, "end")
         entry_1.insert(0, file_path)
-    print(f"{ct()} - Use data retrieved from {file_path}.\n")
+    if wdlg == "EN":
+        print(f"{ct()} - Use data retrieved from {file_path}.\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - Die Daten stammen von {file_path}.\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - Dữ liệu được lấy từ {file_path}.\n")
+
     return file_path
 
 # Browse file button
@@ -393,7 +476,13 @@ def save_api_key():
         return
     entry_4.delete(0, "end")
     entry_4.insert(0, "**************")
-    print(f"{ct()} - API Key provided!\n")
+    if wdlg == "EN":
+        print(f"{ct()} - API Key provided!\n")
+    elif wdlg == "DE":
+        print(f"{ct()} - API-Schlüssel bereitgestellt!\n")
+    elif wdlg == "VN":
+        print(f"{ct()} - API Key đã được cung cấp!\n")
+
     return API_KEY
 
 # Input API_Key
@@ -479,8 +568,18 @@ class StdoutRedirector(object):
         self.text_widget.update_idletasks()
         # Extract processing time
         match = re.search(r".*? abstracts processed in (\d+\.\d+) seconds\..*", string)  # Regex search
+        match1 = re.search(r".*? Abstracts in (\d+\.\d+) Sekunden\..*", string)
+        match2 = re.search(r".*? bản tóm tắt đã được xử lý trong (\d+\.\d+) giây\..*", string)
         if match:
             time = match.group(1)
+            self.time_entry.delete(0, tkinter.END)
+            self.time_entry.insert(0, time)
+        elif match1:
+            time = match1.group(1)
+            self.time_entry.delete(0, tkinter.END)
+            self.time_entry.insert(0, time)
+        elif match2:
+            time = match2.group(1)
             self.time_entry.delete(0, tkinter.END)
             self.time_entry.insert(0, time)
     def flush(self):

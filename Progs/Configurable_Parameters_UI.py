@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 import datetime
+from Main_Functions import role, s_instructions, request_delay
 
 SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 ASSETS_PATH = SCRIPT_DIR / "assets" / "frame0"

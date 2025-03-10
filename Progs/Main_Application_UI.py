@@ -4,10 +4,9 @@ import datetime
 import Main_Functions
 from Main_Functions import ct
 from pathlib import Path
-import tkinter
+import tkinter as tk
 import threading
 import Adjust_Session_Function
-# import Configurable_Parameters_UI
 
 # Import all critical TKinter elements
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
@@ -20,11 +19,11 @@ ICON_PATH = ASSETS_PATH / "icon.png"
 def instruction_message_terminal(event):
     global wdlg
     if wdlg == "EN":
-        message_label = tkinter.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="The terminal will display every action performed by the program, as well as any encountered errors!", bg="lightblue", fg="blue")
     elif wdlg == "DE":
-        message_label = tkinter.Label(window, text="Das Terminal zeigt jede vom Programm ausgeführte Aktion sowie alle aufgetretenen Fehler an!", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Das Terminal zeigt jede vom Programm ausgeführte Aktion sowie alle aufgetretenen Fehler an!", bg="lightblue", fg="blue")
     elif wdlg == "VN":
-        message_label = tkinter.Label(window, text="Toàn bộ tương tác và lỗi đều sẽ được hiển thị trên màn hình này!", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Toàn bộ tương tác và lỗi đều sẽ được hiển thị trên màn hình này!", bg="lightblue", fg="blue")
     message_label.place(x=200, y=398) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -39,11 +38,11 @@ def instruction_message_terminal(event):
 def instruction_message_input(event):
     global wdlg
     if wdlg == "EN":
-        message_label = tkinter.Label(window, text="Please kindly provide the original spreadsheet (.xls, .xlsx) \ncontaining the list of research papers with their associated abstracts.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Please kindly provide the original spreadsheet (.xls, .xlsx) \ncontaining the list of research papers with their associated abstracts.", bg="lightblue", fg="blue")
     elif wdlg == "DE":
-        message_label = tkinter.Label(window, text="Bitte stellen Sie die Originaltabelle (.xls, .xlsx) mit der Liste \nder Forschungsarbeiten und den dazugehörigen Abstracts zur Verfügung.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Bitte stellen Sie die Originaltabelle (.xls, .xlsx) mit der Liste \nder Forschungsarbeiten und den dazugehörigen Abstracts zur Verfügung.", bg="lightblue", fg="blue")
     elif wdlg == "VN":
-        message_label = tkinter.Label(window, text="Vui lòng cung cấp bảng dữ liệu gốc (.xls, .xlsx) \ncó chứa danh sách các bài nghiên cứu cùng những bản tóm tắt có liên quan.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Vui lòng cung cấp bảng dữ liệu gốc (.xls, .xlsx) \ncó chứa danh sách các bài nghiên cứu cùng những bản tóm tắt có liên quan.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=286) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -58,11 +57,11 @@ def instruction_message_input(event):
 def instruction_message_llm_selection(event):
     global wdlg
     if wdlg == "EN":
-        message_label = tkinter.Label(window, text="Please kindly choose the desired Gemini model offered by Google. \nFor example: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, etc. \nImportant: gemini-1.5-pro can only accommodate up to 50 requests per day per API key, \n and is only suitable for a small data set.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Please kindly choose the desired Gemini model offered by Google. \nFor example: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, etc. \nImportant: gemini-1.5-pro can only accommodate up to 50 requests per day per API key, \n and is only suitable for a small data set.", bg="lightblue", fg="blue")
     elif wdlg == "DE":
-        message_label = tkinter.Label(window, text="Bitte wählen Sie das gewünschte LLM. \nBeispiel: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash usw. \nWichtig: gemini-1.5-pro kann nur bis zu 50 Anfragen pro Tag und API-Schlüssel verarbeiten \n und ist nur für kleine Datensätze geeignet.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Bitte wählen Sie das gewünschte LLM. \nBeispiel: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash usw. \nWichtig: gemini-1.5-pro kann nur bis zu 50 Anfragen pro Tag und API-Schlüssel verarbeiten \n und ist nur für kleine Datensätze geeignet.", bg="lightblue", fg="blue")
     elif wdlg == "VN":
-        message_label = tkinter.Label(window, text="Vui lòng chọn LLM từ danh sách xổ xuống. \nVí dụ: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, v.v. \nQuan trọng: gemini-1.5-pro chỉ có thể xử lý tối đa 50 yêu cầu mỗi ngày cho mỗi API key, \nvà chỉ phù hợp với bộ dữ liệu nhỏ.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Vui lòng chọn LLM từ danh sách xổ xuống. \nVí dụ: gemini-1.5-flash, gemini-1.5-pro, gemini-2.0-flash, v.v. \nQuan trọng: gemini-1.5-pro chỉ có thể xử lý tối đa 50 yêu cầu mỗi ngày cho mỗi API key, \nvà chỉ phù hợp với bộ dữ liệu nhỏ.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=209) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -77,11 +76,11 @@ def instruction_message_llm_selection(event):
 def instruction_message_api_input(event):
     global wdlg
     if wdlg == "EN":
-        message_label = tkinter.Label(window, text="Please kindly provide your Google API key.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Please kindly provide your Google API key.", bg="lightblue", fg="blue")
     elif wdlg == "DE":
-        message_label = tkinter.Label(window, text="Bitte geben Sie Ihren Google API-Schlüssel an.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Bitte geben Sie Ihren Google API-Schlüssel an.", bg="lightblue", fg="blue")
     elif wdlg == "VN":
-        message_label = tkinter.Label(window, text="Vui lòng cung cấp Gemini API key của bạn tại đây.", bg="lightblue", fg="blue")
+        message_label = tk.Label(window, text="Vui lòng cung cấp Gemini API key của bạn tại đây.", bg="lightblue", fg="blue")
     message_label.place(x=429, y=133) # Positioning
     # Define entering and leaving object area
     def on_enter(event):
@@ -101,7 +100,7 @@ def ct():
     return crtm.strftime("%Y-%m-%d %H:%M:%S")
 
 # Language Toggle
-class ImageButton(tkinter.Button):
+class ImageButton(tk.Button):
     def __init__(self, master, image_paths, **kwargs):  # Take a list of image paths
         self.images = [PhotoImage(file=path) for path in image_paths]
         super().__init__(master, image=self.images[0], **kwargs)
@@ -139,7 +138,7 @@ lg = ["EN", "DE", "VN"]
 
 current_title_index = 0
 
-window = Tk()
+window = tk.Tk()
 window.title(titles[current_title_index])
 wdlg = "EN"
 window.geometry("975x650")
@@ -181,15 +180,40 @@ button_image_1_DE = PhotoImage(file=relative_to_assets("DE.png"))
 button_image_1_VI = PhotoImage(file=relative_to_assets("VI.png"))
 
 # Toggle settings
-# def settings():
-#     print(f"\n{ct()} - Configuration windows has been opened..")
-#     # global ASSETS_PATH
-#     # path1 = ASSETS_PATH
-#     # print(f"{path1}")
-#     # global ICON_PATH
-#     # path2 = ICON_PATH
-#     # print(f"{path2}")
-#     Configurable_Parameters_UI.main()
+def configurable_parameters():
+    global window
+    window1 = tk.Toplevel(window)
+    window1.title("Configuration")
+    window1.geometry("975x650")
+    window1.configure(bg="#6D7BFA")
+    window1.resizable(False, False)
+
+    # Icon loading
+    icon_path = relative_to_assets("icon.png").as_posix()
+    try:
+        icon = PhotoImage(file=icon_path)
+        window1.iconphoto(True, icon)
+    except Exception as e:
+        print(f"{ct()} - Error loading icon: {e}\n")
+
+    canvas1 = Canvas(window1, bg="#6D7BFA", height=650, width=975, bd=0, highlightthickness=0, relief="ridge")
+    canvas1.place(x=0, y=0)
+    canvas_image_1 = PhotoImage(file=relative_to_assets("config.png").as_posix())
+    canvas1.create_image(488.0, 325.0, image=canvas_image_1)
+    canvas.image = canvas_image_1
+    button_image_1 = PhotoImage(file=relative_to_assets("save.png").as_posix())
+    save_button = Button(window1, image=button_image_1, borderwidth=0, highlightthickness=0, command=lambda: print("Saved!"), relief="flat")
+    save_button.place(x=827.0, y=588.0, width=116.99999237060547, height=39.20000076293945)
+    save_button.image = button_image_1
+
+    entry_si = Text(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, wrap="word")
+    entry_si.place(x=169.0, y=180.0, width=790.0, height=367.0)
+
+    entry_rd = Entry(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
+    entry_rd.place(x=169.0, y=594.0, width=119.0, height=32.0)
+
+    entry_r = Text(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, wrap="word")
+    entry_r.place(x=169.0, y=33.999999999999986, width=780.0, height=92.0)
 
 # Settings button
 button_image_7 = PhotoImage(
@@ -198,7 +222,7 @@ button_7 = Button(
     image=button_image_7,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print(f"{ct()} - Configurable parameters windows is being worked on. Nothing can be accessed for now.."),
+    command=configurable_parameters,
     relief="flat"
 )
 button_7.place(
@@ -257,7 +281,7 @@ entry_2.place(
 
 # Set window icon
 try:
-    icon = tkinter.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
+    icon = tk.PhotoImage(file=str(ICON_PATH))  # Convert Path to string
     window.iconphoto(True, icon)
 except FileNotFoundError:
     if wdlg == "EN":
@@ -563,8 +587,8 @@ class StdoutRedirector(object):
         self.time_entry = time_entry
         self.text_widget.tag_config("output", foreground="lightblue")  # Configure the tag
     def write(self, string):
-        self.text_widget.insert(tkinter.END, string, "output")  # Apply the tag
-        self.text_widget.see(tkinter.END)
+        self.text_widget.insert(tk.END, string, "output")  # Apply the tag
+        self.text_widget.see(tk.END)
         self.text_widget.update_idletasks()
         # Extract processing time
         match = re.search(r".*? abstracts processed in (\d+\.\d+) seconds\..*", string)  # Regex search
@@ -572,15 +596,15 @@ class StdoutRedirector(object):
         match2 = re.search(r".*? bản tóm tắt đã được xử lý trong (\d+\.\d+) giây\..*", string)
         if match:
             time = match.group(1)
-            self.time_entry.delete(0, tkinter.END)
+            self.time_entry.delete(0, tk.END)
             self.time_entry.insert(0, time)
         elif match1:
             time = match1.group(1)
-            self.time_entry.delete(0, tkinter.END)
+            self.time_entry.delete(0, tk.END)
             self.time_entry.insert(0, time)
         elif match2:
             time = match2.group(1)
-            self.time_entry.delete(0, tkinter.END)
+            self.time_entry.delete(0, tk.END)
             self.time_entry.insert(0, time)
     def flush(self):
         pass

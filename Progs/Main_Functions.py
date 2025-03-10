@@ -14,9 +14,9 @@ os.makedirs(RESULTS_PATH, exist_ok=True)
 
 # Default global parameters
 terminal_language = "EN"
-request_delay = 12
-role = "You are an expert in sustainable manufacturing that is excellent with analyzing research paper abstracts. Your primary goal is to categorize the abstracts based on predefined topics and provide specific information in a structured format."
-s_instructions = """1. Analyze the provided abstract and determine the most appropriate "Overall Category."  This category *must* be chosen from one of the following four predefined topics. Do not create new categories.
+request_delay_default = 12
+role_default = "You are an expert in sustainable manufacturing that is excellent with analyzing research paper abstracts. Your primary goal is to categorize the abstracts based on predefined topics and provide specific information in a structured format."
+s_instructions_default = """1. Analyze the provided abstract and determine the most appropriate "Overall Category."  This category *must* be chosen from one of the following four predefined topics. Do not create new categories.
             2. Identify the specific "Field of Research" that best describes the abstract. This field *must* be chosen from the sub-topics listed under the chosen "Overall Category." Do not create new sub-topics.
             3. Identify the primary "Research Method" used in the research described in the abstract.  Provide a concise answer (no more than three words).
             4. Assess the "Scope" of the research. Assign a score from 1 to 6 (1 = extremely narrow, 6 = extremely broad).
@@ -221,8 +221,8 @@ def adjust_session_numbers(df):
     df["Adjusted Session No."] = df["Adjusted Session No."].map(session_rename_map)
 
     return df
-def input_from_spreadsheet(file_path, model, llm_selection):
-    global terminal_language, request_delay
+def input_from_spreadsheet(file_path, model, llm_selection, request_delay = request_delay_default):
+    global terminal_language
     # Create data frame from the provided spreadsheet
     df = pd.read_excel(file_path)
     # Record start time
@@ -374,8 +374,8 @@ def browser_display(df_final, llm):
         elif terminal_language == "VN":
             print(f"{ct()} - Gặp lỗi khi hiển thị kết quả qua trình duyệt: {e}\n")
 
-def main(file_path, llm_selection, API_KEY, wdlg):
-    global terminal_language, role, s_instructions
+def main(file_path, llm_selection, API_KEY, wdlg, role = role_default, s_instructions = s_instructions_default, request_delay = request_delay_default):
+    global terminal_language
     terminal_language = wdlg
     if terminal_language == "EN":
         print(f"{ct()} - Start analyzing!\n")
@@ -463,7 +463,7 @@ def main(file_path, llm_selection, API_KEY, wdlg):
         print(f"{ct()} - Phân tích...\n")
     df = pd.read_excel(file_path)
     # Preliminary data processing using original spreadsheet data
-    df_results = input_from_spreadsheet(file_path, model, llm_selection)
+    df_results = input_from_spreadsheet(file_path, model, llm_selection, request_delay)
     df_r = session_assignment(df_results)
     df_r["Session No."] = df_r["Refined Grouping"].map(lambda g: merge_groups(df_r).get(g, g))
     df_r["Session No."] = df_r["Session No."].map({name: f"{i+1}" for i, name in enumerate(df_r["Session No."].unique())})

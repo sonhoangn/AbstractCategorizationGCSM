@@ -138,6 +138,17 @@ lg = ["EN", "DE", "VN"]
 
 current_title_index = 0
 
+# Global default parameters
+request_delay = 12
+role = "You are an expert in sustainable manufacturing that is excellent with analyzing research paper abstracts. Your primary goal is to categorize the abstracts based on predefined topics and provide specific information in a structured format."
+s_instructions = """1. Analyze the provided abstract and determine the most appropriate "Overall Category."  This category *must* be chosen from one of the following four predefined topics. Do not create new categories.
+            2. Identify the specific "Field of Research" that best describes the abstract. This field *must* be chosen from the sub-topics listed under the chosen "Overall Category." Do not create new sub-topics.
+            3. Identify the primary "Research Method" used in the research described in the abstract.  Provide a concise answer (no more than three words).
+            4. Assess the "Scope" of the research. Assign a score from 1 to 6 (1 = extremely narrow, 6 = extremely broad).
+            5. Determine the "Research Purpose."  Is the research primarily "Theoretical" or "Applied"?
+            6. Forecast the "Presentation Time" needed for the topic. Choose either "Brief" (less than 10 minutes) or "Long" (up to 15 minutes).
+            7. Provide the "Prompt token count" and "Response token count" for billing and troubleshooting."""
+
 window = tk.Tk()
 window.title(titles[current_title_index])
 wdlg = "EN"
@@ -181,7 +192,7 @@ button_image_1_VI = PhotoImage(file=relative_to_assets("VI.png"))
 
 # Toggle settings
 def configurable_parameters():
-    global window
+    global window, role, s_instructions, request_delay
     window1 = tk.Toplevel(window)
     window1.title("Configuration")
     window1.geometry("975x650")
@@ -191,8 +202,8 @@ def configurable_parameters():
     # Icon loading
     icon_path = relative_to_assets("icon.png").as_posix()
     try:
-        icon = PhotoImage(file=icon_path)
-        window1.iconphoto(True, icon)
+        icon1 = PhotoImage(file=icon_path)
+        window1.iconphoto(True, icon1)
     except Exception as e:
         print(f"{ct()} - Error loading icon: {e}\n")
 
@@ -201,19 +212,45 @@ def configurable_parameters():
     canvas_image_1 = PhotoImage(file=relative_to_assets("config.png").as_posix())
     canvas1.create_image(488.0, 325.0, image=canvas_image_1)
     canvas.image = canvas_image_1
-    button_image_1 = PhotoImage(file=relative_to_assets("save.png").as_posix())
-    save_button = Button(window1, image=button_image_1, borderwidth=0, highlightthickness=0, command=lambda: print("Saved!"), relief="flat")
-    save_button.place(x=827.0, y=588.0, width=116.99999237060547, height=39.20000076293945)
-    save_button.image = button_image_1
 
     entry_si = Text(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, wrap="word")
     entry_si.place(x=169.0, y=180.0, width=790.0, height=367.0)
+    entry_si.insert("1.0", s_instructions)
 
     entry_rd = Entry(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
     entry_rd.place(x=169.0, y=594.0, width=119.0, height=32.0)
+    entry_rd.insert(0, request_delay)
 
     entry_r = Text(window1, bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, wrap="word")
     entry_r.place(x=169.0, y=33.999999999999986, width=780.0, height=92.0)
+    entry_r.insert("1.0", role)
+
+    # Save adjusted values
+    def save_input():
+        global role, s_instructions, request_delay, wdlg
+        role = entry_r.get("1.0", tk.END).strip()
+        s_instructions = entry_si.get("1.0", tk.END).strip()
+        request_delay = entry_rd.get()
+        try:
+            request_delay = int(request_delay)
+        except:
+            if wdlg == "EN":
+                print(f"{ct()} - Error, request delay must be an integer!\n")
+            elif wdlg == "DE":
+                print(f"{ct()} - Fehler, die Verzögerung muss eine Ganzzahl sein!\n")
+            elif wdlg == "VN":
+                print(f"{ct()} - Lỗi, độ trễ phải là số nguyên!\n")
+        if wdlg == "EN":
+            print(f"{ct()} - All new entries are saved!\n")
+        elif wdlg == "DE":
+            print(f"{ct()} - Alle neuen Einträge werden gespeichert!\n")
+        elif wdlg == "VN":
+            print(f"{ct()} - Thông tin điều chỉnh đã được lưu!\n")
+
+    button_image_1 = PhotoImage(file=relative_to_assets("save.png").as_posix())
+    save_button = Button(window1, image=button_image_1, borderwidth=0, highlightthickness=0, command=save_input, relief="flat")
+    save_button.place(x=827.0, y=588.0, width=116.99999237060547, height=39.20000076293945)
+    save_button.image = button_image_1
 
 # Settings button
 button_image_7 = PhotoImage(
@@ -300,7 +337,7 @@ except Exception as e:
 
 # Running Main_Functions
 def start_analysis():
-    global file_path, llm_selection, API_KEY, wdlg
+    global file_path, llm_selection, API_KEY, wdlg, role, s_instructions, request_delay
     if wdlg == "EN":
         print(f"{ct()} - Data in use: {file_path}, with LLM: {llm_selection} and API Key: {API_KEY}\n")
     elif wdlg == "DE":
@@ -325,7 +362,7 @@ def start_analysis():
 
     # Enable the main process to be performed in Multi-threading mode to avoid UI unresponsiveness
     def process_in_thread():
-        Main_Functions.main(file_path, llm_selection, API_KEY, wdlg)
+        Main_Functions.main(file_path, llm_selection, API_KEY, wdlg, role, s_instructions, request_delay)
 
     thread = threading.Thread(target=process_in_thread)
     thread.start()
@@ -480,7 +517,8 @@ entry_4 = Entry(
     bd=0,
     bg="#FFFFFF",
     fg="#000716",
-    highlightthickness=0
+    highlightthickness=0,
+    show="*" # hide input while typing
 )
 entry_4.place(
     x=429.0,

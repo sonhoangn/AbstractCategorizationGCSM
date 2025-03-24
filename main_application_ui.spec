@@ -35,4 +35,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False,
-          icon='G:\\GPE\\GPE Projects\\AbstractCategorizationGCSM\\Progs\\assets\\frame0\\icon.ico')
+          icon='E:\\Projects\\Applications\\AbstractCategorization\\Progs\\assets\\frame0\\icon.ico')

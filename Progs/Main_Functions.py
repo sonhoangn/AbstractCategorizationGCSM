@@ -343,7 +343,7 @@ def unexpected_characters(text):
     return text.replace('\u01b0', 'L')
 
 # Display results via browser
-def browser_display(df_final, llm):
+def browser_display(df_final, llm = None):
     global terminal_language
     if terminal_language == "EN":
         print(f"{ct()} - Converting result spreadsheet to readable html format.\n")

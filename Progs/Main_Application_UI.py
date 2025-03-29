@@ -275,7 +275,14 @@ def info_display():
         print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
               "\nKindly refer to all source codes and revisions on:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-              "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"),
+              "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"
+              "\n - Credits for the testing, validation effort and feedback during development:"
+              "\n* Truong Duc Anh"
+              "\n* Tran Hoang Duy"
+              "\n* Phan Thi Nhu Mai"
+              "\n* Nguyen Ngoc Nhu Quynh"
+              "\n* Huynh Nam Son"
+              "\n* Nguyen Xuan Thao"),
     elif wdlg == "DE":
         print(f"{ct()} - Erstellt von Nguyen, Son Hoang und Le, Thi Dieu Ly."
               "\nBitte beachten Sie alle Quellcodes und Revisionen auf:"

@@ -287,13 +287,27 @@ def info_display():
         print(f"{ct()} - Erstellt von Nguyen, Son Hoang und Le, Thi Dieu Ly."
               "\nBitte beachten Sie alle Quellcodes und Revisionen auf:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-              "\nVerwendung: Dieses Programm nutzt verschiedene Gemini-Modelle von Google unter Verwendung des von Google bereitgestellten API-Schlüssels, um einen großen Datensatz von Abstracts aus verschiedenen Forschungsarbeiten zu analysieren und sie so anhand ihres Ähnlichkeitsgrades in Sitzungen zu gruppieren.\n"),
+              "\nVerwendung: Dieses Programm nutzt verschiedene Gemini-Modelle von Google unter Verwendung des von Google bereitgestellten API-Schlüssels, um einen großen Datensatz von Abstracts aus verschiedenen Forschungsarbeiten zu analysieren und sie so anhand ihres Ähnlichkeitsgrades in Sitzungen zu gruppieren.\n"
+              "\n - Anerkennung für die Test-, Validierungsbemühungen und das Feedback während der Entwicklung:"
+              "\n* Truong Duc Anh"
+              "\n* Tran Hoang Duy"
+              "\n* Phan Thi Nhu Mai"
+              "\n* Nguyen Ngoc Nhu Quynh"
+              "\n* Huynh Nam Son"
+              "\n* Nguyen Xuan Thao"),
 
     elif wdlg == "VN":
         print(f"{ct()} - Được viết bởi Nguyễn Sơn Hoàng và Lê Thị Diệu Ly."
               "\nVui lòng tham khảo tất cả các mã nguồn và bản sửa đổi trên:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
-              "\nSử dụng: Chương trình này tận dụng các mô hình Gemini khác nhau từ Google bằng cách sử dụng khóa API do Google cung cấp để giúp phân tích những bộ dữ liệu lớn gồm các bản tóm tắt từ nhiều bài báo nghiên cứu khác nhau, từ đó giúp phân loại chúng thành nhiều nhóm dựa trên mức độ tương đồng về mặt nội dung của chúng.\n"),
+              "\nSử dụng: Chương trình này tận dụng các mô hình Gemini khác nhau từ Google bằng cách sử dụng khóa API do Google cung cấp để giúp phân tích những bộ dữ liệu lớn gồm các bản tóm tắt từ nhiều bài báo nghiên cứu khác nhau, từ đó giúp phân loại chúng thành nhiều nhóm dựa trên mức độ tương đồng về mặt nội dung của chúng.\n"
+              "\n - Ghi nhận đóng góp trong quá trình phát triển giải pháp:"
+              "\n* Trương Đức Anh"
+              "\n* Tran Hoàng Duy"
+              "\n* Phan Thị Như Mai"
+              "\n* Nguyễn Ngọc Như Quỳnh"
+              "\n* Huỳnh Nam Sơn"
+              "\n* Nguyễn Xuân Thao"),
 
 # Info button
 button_image_8 = PhotoImage(

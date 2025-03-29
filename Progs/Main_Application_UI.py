@@ -272,10 +272,13 @@ button_7.place(
 def info_display():
     global wdlg
     if wdlg == "EN":
-        print(f"{ct()} - Created by Nguyen, Son Hoang & Le, Thi Dieu Ly."
+        print(f"{ct()} - General Information:"
               "\nKindly refer to all source codes and revisions on:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
               "\nUsage: This program leverages different Gemini models from Google using Google-provided API key to help analyzing a large data set of abstracts from various research papers, thus helping with grouping them into sessions based on their similarity level.\n"
+              "\n - Created by: "
+              "\n* Nguyen Son Hoang"
+              "\n* Le Thi Dieu Ly"
               "\n - Credits for the testing, validation effort and feedback during development:"
               "\n* Truong Duc Anh"
               "\n* Tran Hoang Duy"
@@ -284,10 +287,13 @@ def info_display():
               "\n* Huynh Nam Son"
               "\n* Nguyen Xuan Thao"),
     elif wdlg == "DE":
-        print(f"{ct()} - Erstellt von Nguyen, Son Hoang und Le, Thi Dieu Ly."
+        print(f"{ct()} - Allgemeine Informationen:"
               "\nBitte beachten Sie alle Quellcodes und Revisionen auf:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
               "\nVerwendung: Dieses Programm nutzt verschiedene Gemini-Modelle von Google unter Verwendung des von Google bereitgestellten API-Schlüssels, um einen großen Datensatz von Abstracts aus verschiedenen Forschungsarbeiten zu analysieren und sie so anhand ihres Ähnlichkeitsgrades in Sitzungen zu gruppieren.\n"
+              "\n - Erstellt von: "
+              "\n* Nguyen Son Hoang"
+              "\n* Le Thi Dieu Ly"
               "\n - Anerkennung für die Test-, Validierungsbemühungen und das Feedback während der Entwicklung:"
               "\n* Truong Duc Anh"
               "\n* Tran Hoang Duy"
@@ -297,10 +303,13 @@ def info_display():
               "\n* Nguyen Xuan Thao"),
 
     elif wdlg == "VN":
-        print(f"{ct()} - Được viết bởi Nguyễn Sơn Hoàng và Lê Thị Diệu Ly."
+        print(f"{ct()} - Tổng Quan:"
               "\nVui lòng tham khảo tất cả các mã nguồn và bản sửa đổi trên:"
               "\nhttps://github.com/sonhoangn/AbstractCategorizationGCSM/tree/master/Progs"
               "\nSử dụng: Chương trình này tận dụng các mô hình Gemini khác nhau từ Google bằng cách sử dụng khóa API do Google cung cấp để giúp phân tích những bộ dữ liệu lớn gồm các bản tóm tắt từ nhiều bài báo nghiên cứu khác nhau, từ đó giúp phân loại chúng thành nhiều nhóm dựa trên mức độ tương đồng về mặt nội dung của chúng.\n"
+              "\n - Được viết bởi: "
+              "\n* Nguyễn Sơn Hoàng"
+              "\n* Lê Thị Diệu Ly"
               "\n - Ghi nhận đóng góp trong quá trình phát triển giải pháp:"
               "\n* Trương Đức Anh"
               "\n* Tran Hoàng Duy"

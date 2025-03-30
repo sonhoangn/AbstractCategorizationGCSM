@@ -312,7 +312,7 @@ def info_display():
               "\n* Lê Thị Diệu Ly"
               "\n - Ghi nhận đóng góp trong quá trình phát triển giải pháp:"
               "\n* Trương Đức Anh"
-              "\n* Tran Hoàng Duy"
+              "\n* Trần Hoàng Duy"
               "\n* Phan Thị Như Mai"
               "\n* Nguyễn Ngọc Như Quỳnh"
               "\n* Huỳnh Nam Sơn"

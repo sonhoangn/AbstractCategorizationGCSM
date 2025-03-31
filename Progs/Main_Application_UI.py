@@ -5,16 +5,56 @@ import Main_Functions
 from Main_Functions import ct
 from pathlib import Path
 import tkinter as tk
+from PIL import Image, ImageTk
 import threading
 import Adjust_Session_Function
 
 # Import all critical TKinter elements
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, filedialog, ttk
 
-# Global pathing parameters
+# Global parameters
 FILE_PATH = Path(__file__).parent
 ASSETS_PATH = FILE_PATH / "assets" / "frame0"
 ICON_PATH = ASSETS_PATH / "icon.png"
+gif_file = FILE_PATH / "assets" / "frame0" / "ls.gif"
+gif_x = 933
+gif_y = 378
+
+def load_gif_frames(filename):
+    try:
+        img = Image.open(filename)
+        frames = []
+        delays = []
+        try:
+            while True:
+                # Convert to RGBA to preserve transparency
+                rgba_img = img.convert("RGBA")
+                frames.append(ImageTk.PhotoImage(rgba_img))
+                delays.append(img.info.get('duration', 100))
+                img.seek(img.tell() + 1)
+        except EOFError:
+            pass  # End of GIF frames
+        return frames, delays
+    except FileNotFoundError:
+        print(f"Error: GIF file '{filename}' not found.")
+        return [], []
+
+def update_frame(label, frames, delays, index):
+    if frames:
+        label.config(image=frames[index])
+        window.after(delays[index], update_frame, label, frames, delays, (index + 1) % len(frames))
+animated_label = None
+def add_animated_gif(parent, gif_filepath, x, y):
+    frames, delays = load_gif_frames(gif_filepath)
+    if frames:
+        animation_label = tk.Label(parent, bg="#9cacfd")
+        animation_label.place(x=x, y=y)
+        update_frame(animation_label, frames, delays, 0)
+        return animation_label
+    else:
+        error_label = tk.Label(parent, text="Could not load animated GIF.")
+        error_label.place(x=x, y=y)
+        return error_label
 
 def instruction_message_terminal(event):
     global wdlg
@@ -650,6 +690,7 @@ entry_5.bind("<Enter>", instruction_message_terminal)
 
 # Redirect stdout to the terminal area
 class StdoutRedirector(object):
+    global gif_file, gif_x, gif_y, animated_label
     def __init__(self, text_widget, time_entry):
         self.text_widget = text_widget
         self.time_entry = time_entry
@@ -662,6 +703,12 @@ class StdoutRedirector(object):
         match = re.search(r".*? abstracts processed in (\d+\.\d+) seconds\..*", string)  # Regex search
         match1 = re.search(r".*? Abstracts in (\d+\.\d+) Sekunden\..*", string)
         match2 = re.search(r".*? bản tóm tắt đã được xử lý trong (\d+\.\d+) giây\..*", string)
+        match3 = re.search(r"Start analyzing!", string)  # Regex search
+        match4 = re.search(r"Die Analyse wird durchgeführt", string)
+        match5 = re.search(r"Phân tích đang được tiến hành", string)
+        match6 = re.search(r"Final results save to", string)  # Regex search
+        match7 = re.search(r"Endgültige Ergebnisse speichern unter", string)
+        match8 = re.search(r"Kết quả cuối cùng đã được lưu vào", string)
         if match:
             time = match.group(1)
             self.time_entry.delete(0, tk.END)
@@ -674,6 +721,12 @@ class StdoutRedirector(object):
             time = match2.group(1)
             self.time_entry.delete(0, tk.END)
             self.time_entry.insert(0, time)
+        elif match3 or match4 or match5:
+            global animated_label
+            animated_label = add_animated_gif(window, gif_file, gif_x, gif_y)
+        elif match6 or match7 or match8:
+            if animated_label:
+                animated_label.place_forget()
     def flush(self):
         pass
 sys.stdout = StdoutRedirector(entry_5, entry_2)

@@ -17,8 +17,11 @@ FILE_PATH = Path(__file__).parent
 ASSETS_PATH = FILE_PATH / "assets" / "frame0"
 ICON_PATH = ASSETS_PATH / "icon.png"
 gif_file = FILE_PATH / "assets" / "frame0" / "ls.gif"
+gif_logo = FILE_PATH / "assets" / "frame0" / "rls.gif"
 gif_x = 933
 gif_y = 378
+l_x = 6
+l_y = 8
 
 def load_gif_frames(filename):
     try:
@@ -44,6 +47,7 @@ def update_frame(label, frames, delays, index):
         label.config(image=frames[index])
         window.after(delays[index], update_frame, label, frames, delays, (index + 1) % len(frames))
 animated_label = None
+animated_logo = None
 def add_animated_gif(parent, gif_filepath, x, y):
     frames, delays = load_gif_frames(gif_filepath)
     if frames:
@@ -55,7 +59,17 @@ def add_animated_gif(parent, gif_filepath, x, y):
         error_label = tk.Label(parent, text="Could not load animated GIF.")
         error_label.place(x=x, y=y)
         return error_label
-
+def add_animated_logo(parent, gif_filepath, x, y):
+    frames, delays = load_gif_frames(gif_filepath)
+    if frames:
+        animation_label = tk.Label(parent, bg="#243468")
+        animation_label.place(x=x, y=y)
+        update_frame(animation_label, frames, delays, 0)
+        return animation_label
+    else:
+        error_label = tk.Label(parent, text="Could not load animated GIF.")
+        error_label.place(x=x, y=y)
+        return error_label
 def instruction_message_terminal(event):
     global wdlg
     if wdlg == "EN":
@@ -722,11 +736,13 @@ class StdoutRedirector(object):
             self.time_entry.delete(0, tk.END)
             self.time_entry.insert(0, time)
         elif match3 or match4 or match5:
-            global animated_label
+            global animated_label, animated_logo
             animated_label = add_animated_gif(window, gif_file, gif_x, gif_y)
+            animated_logo = add_animated_logo(window, gif_logo, l_x, l_y)
         elif match6 or match7 or match8:
-            if animated_label:
+            if animated_label or animated_logo:
                 animated_label.place_forget()
+                animated_logo.place_forget()
     def flush(self):
         pass
 sys.stdout = StdoutRedirector(entry_5, entry_2)

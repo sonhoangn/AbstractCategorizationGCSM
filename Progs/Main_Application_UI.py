@@ -539,7 +539,7 @@ button_4.place(
 )
 
 # LLM Selection box
-llm_options = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-2.0-flash", "gemini-2.0-flash-lite-preview-02-05"]
+llm_options = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-2.0-flash", "gemini-2.0-flash-lite-preview-02-05", "gemini-2.5-pro-exp-03-25"]
 entry_image_3 = PhotoImage(
     file=relative_to_assets("inputarea.png"))
 entry_bg_3 = canvas.create_image(
